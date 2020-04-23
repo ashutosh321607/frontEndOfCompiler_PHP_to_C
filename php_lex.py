@@ -48,28 +48,138 @@ tokens=reserved+unparsed+(
     
 )
 
-t_php_PLUS                = r'\+'
-t_php_MINUS               = r'-'
-t_php_MUL                 = r'\*'
-t_php_DIV                 = r'/'
-t_php_MOD                 = r'%'
-t_php_AND                 = r'&'
-t_php_OR                  = r'\|'
-t_php_NOT                 = r'~'
-t_php_XOR                 = r'\^'
-t_php_SL                  = r'<<'
-t_php_SR                  = r'>>'
-t_php_BOOLEAN_AND         = r'&&'
-t_php_BOOLEAN_OR          = r'\|\|'
-t_php_BOOLEAN_NOT         = r'!'
-t_php_LESS_THAN           = r'<'
-t_php_GREATER_THAN        = r'>'
-t_php_LESS_THAN_OR_EQUAL     = r'<='
-t_php_GREATER_THAN_OR_EQUAL = r'>='
-t_php_IS_EQUAL_TO            = r'=='
-t_php_IS_NOT_EQUAL        = r'(!=(?!=))|(<>)'
-t_php_IS_IDENTICAL        = r'==='
-t_php_IS_NOT_IDENTICAL    = r'!=='
+# t_php_PLUS                = r'\+'
+def t_php_PLUS(t):
+    r'\+'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_MINUS               = r'-'
+def t_php_MINUS (t):
+    r'-'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_MUL                 = r'\*'
+def t_php_MU(t):
+    r'\*'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_DIV                 = r'/'
+def t_php_DIV(t):
+    r'/'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_MOD                 = r'%'
+def t_php_MOD(t):
+    r'%'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_AND                 = r'&'
+def t_php_AND(t):
+    r'&'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_OR                  = r'\|'
+def t_php_OR(t):
+    r'\|'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_NOT                 = r'~'
+def t_php_NOT(t):
+    r'~'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_XOR                 = r'\^'
+def t_php_XOR(t):
+    r'\^'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_SL                  = r'<<'
+def t_php_SL(t):
+    r'<<'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_SR                  = r'>>'
+def t_php_SR(t):
+    r'>>'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_BOOLEAN_AND         = r'&&'
+def t_php_BOOLEAN_AND(t):
+    r'&&'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_BOOLEAN_OR          = r'\|\|'
+def t_php_BOOLEAN_OR(t):
+    r'\|\|'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_BOOLEAN_NOT         = r'!'
+def t_php_BOOLEAN_NOT(t):
+    r'!'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_LESS_THAN           = r'<'
+def t_php_LESS_THAN(t):
+    r'<'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_GREATER_THAN        = r'>'
+def t_php_GREATER_THAN(t):
+    r'>'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_LESS_THAN_OR_EQUAL     = r'<='
+def t_php_LESS_THAN_OR_EQUAL(t):
+    r'<='
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_GREATER_THAN_OR_EQUAL = r'>='
+def t_php_GREATER_THAN_OR_EQUAL(t):
+    r'>='
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_IS_EQUAL_TO            = r'=='
+def t_php_IS_EQUAL_TO(t):
+    r'=='
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_IS_NOT_EQUAL        = r'(!=(?!=))|(<>)'
+def t_php_IS_NOT_EQUAL(t):
+    r'(!=(?!=))|(<>)'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_IS_IDENTICAL        = r'==='
+def t_php_IS_IDENTICAL(t):
+    r'==='
+    t.value=(t.value,{'type':t.type})
+    return t
+
+# t_php_IS_NOT_IDENTICAL    = r'!=='
+def t_php_IS_NOT_IDENTICAL(t):
+    r'!=='
+    t.value=(t.value,{'type':t.type})
+    return t
+
 
 
 t_php_EQUALS               = r'='
