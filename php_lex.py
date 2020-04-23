@@ -482,7 +482,9 @@ def t_ANY_error(t):
 lexer=lex.lex()
 lexer.symbol_table=SymbolTable()
 
-with open('/home/siram/Downloads/ilp/frontEndOfCompiler_PHP_to_C/test_files/variables.php') as f:
+
+#Driver code
+with open('./test_files/variables.php') as f:
     string=""
     lines=f.readlines()
     string="".join(lines)
