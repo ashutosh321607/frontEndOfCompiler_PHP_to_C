@@ -1,0 +1,174 @@
+def t_php_EQUALS(t):
+	r'='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_MUL_EQUAL(t):
+	r'\*='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_DIV_EQUAL(t):
+	r'/='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_MOD_EQUAL(t):
+	r'%='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_PLUS_EQUAL(t):
+	r'\+='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_MINUS_EQUAL(t):
+	r'-='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_SL_EQUAL(t):
+	r'<<='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_SR_EQUAL(t):
+	r'>>='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_AND_EQUAL(t):
+	r'&='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_OR_EQUAL(t):
+	r'\|='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_XOR_EQUAL(t):
+	r'\^='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_CONCAT_EQUAL(t):
+	r'\.='
+	t.value=(t.value,{'type':t.type})
+	return t
+
+
+def t_php_INC(t):
+	r'\+\+'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_DEC(t):
+	r'--'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+
+def t_php_CONCAT(t):
+	r'\.(?!\d|=)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_LPAREN(t):
+	r'\('
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_RPAREN(t):
+	r'\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_DOLLAR(t):
+	r'\$'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_COMMA(t):
+	r','
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_QUESTION(t):
+	r'\?'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_COLON(t):
+	r':'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_SEMI_COLON(t):
+	r';'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_AT(t):
+	r'@'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_NS_SEPARATOR(t):
+	r'\\'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+
+def t_php_ARRAY_CAST(t):
+	r'\([\t]*[Aa][Rr][Rr][Aa][Yy][\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_BINARY_CAST(t):
+	r'\([\t]*[Bb][Ii][Nn][Aa][Rr][Yy][\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_BOOL_CAST(t):
+	r'\([\t]*[Bb][Oo][Oo][Ll]([Ee][Aa][Nn])?[\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_DOUBLE_CAST(t):
+	r'\([\t]*([Rr][Ee][Aa][Ll]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Ff][Ll][Oo][Aa][Tt])[\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_INT_CAST(t):
+	r'\([\t]*[Ii][Nn][Tt]([Ee][Gg][Ee][Rr])?[\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_OBJECT_CAST(t):
+	r'\([\t]*[Oo][Bb][Jj][Ee][Cc][Tt][\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_STRING_CAST(t):
+	r'\([\t]*[Ss][Tt][Rr][Ii][Nn][Gg][\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_UNSET_CAST(t):
+	r'\([\t]*[Uu][Nn][Ss][Ee][Tt][\t]*\)'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+
+def t_ignore_WHITESAPCE(t):
+	r'\s'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_ignore_php_COMMENT(t):
+	r'/\*(.|\n)*\*/|(//|\#)([^?\n]|?(?!>))*\n?'
+	t.value=(t.value,{'type':t.type})
+	return t
+
