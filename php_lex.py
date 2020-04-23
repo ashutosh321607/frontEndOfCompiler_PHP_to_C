@@ -1,5 +1,6 @@
 import ply.lex as lex
 import re
+from symbol_table import SymbolTable
 
 states=(
 ('php','exclusive'),
@@ -125,57 +126,91 @@ def t_php_end(t):
     
 def t_INLINE_HTML(t):
     r'([^<]|<(?![?]))+'
+    t.value=(t.value,{'type':t.type})
     t.lexer.lineno+=t.value.count('\n')
     return t
 
 def t_php_reserved_words(t):
         r'^[a-zA-Z_][a-zA-Z0-9_]*'
-        t.type=reserved_map.get(t.value.upper())
+        t.type=reserved_map.get(t.value.upper(),None)
         if(t.type==None):
             print('Illegal Character at pos %d and lineno. %d'%(t.lexer.lexpos,t.lexer.lineno))
         else:
+            t.value=(t.value,{'type':t.type})
             return t
 
 def t_php_INT_NUMBER(t):
     r'\d+([eE][*-]?\d+)?'
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
 def t_php_FLOAT_NUMBER(t):
     r'\d*\.\d+([eE][*-]?\d+)?'
+    
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    
+    return t
 
 def t_php_varaiable(t):
     r'\$^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$'
+    
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+        
     return t
 
 def t_php_SINGLE_QUOTE(t):
     r'\''
     t.lexer.push_state('singleQuoted')
+    t.value=(t.value,{'type':t.type})
     return t
 
 def t_singleQuoted_STRING(t):
     r"[^']*|((?<=\)')*"
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
 def t_singleQuote_SINGLE_QUOTE(t):
     r"(?<!\)'"
     t.lexer.pop_state()
+    t.value=(t.value,{'type':t.type})
     return t
 
 def t_php_DOUBLE_QUOTE(t):
     r'"'
     t.lexer.push_state('doubleQuoted')
+    t.value=(t.value,{'type':t.type})
+
     return t
 
 def t_doubleQuoted_STRING(t):
     r'[^$"]*|((?<=\)")*|((?<=\)$)*'
+
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    
     return t
 
 def t_doubleQuoted_VARIABLE(t):
     r'\$^[a-zA-Z_\x80-\xff][a-zA-Z0-9_\x80-\xff]*$'
+    
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    
     return t
 
 def t_doubleQuoted_DOUBLE_QUOTE(t):
     r'(?<!\)"'
+    t.value=(t.value,{'type':t.type})
     return t
 
 def t_ANY_newline(t):
@@ -185,3 +220,8 @@ def t_ANY_newline(t):
 def t_php_error(t):
     print('Illegal character at line no. %d and position no. %d'% (t.lexer.lineno,t.lexer.lexpos))
     t.lexer.skip(1)
+    
+    
+lexer=lex.lex()
+lexer.symbol_table=SymbolTable()
+
