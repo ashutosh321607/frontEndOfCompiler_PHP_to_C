@@ -303,6 +303,28 @@ def t_php_RPAREN(t):
 	t.value=(t.value,{'type':t.type})
 	return t
 
+def t_php_LBRACE(t):
+	r'\['
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_RBRACE(t):
+	r'\] '
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_LBRACK(t):
+	r'\{'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+def t_php_RBRACK(t):
+	r'\}'
+	t.value=(t.value,{'type':t.type})
+	return t
+
+
+
 def t_php_DOLLAR(t):
 	r'\$'
 	t.value=(t.value,{'type':t.type})
