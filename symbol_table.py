@@ -20,4 +20,3 @@ class SymbolTable:
     def get_attribute(self,name,attribute_name):
         return self.symbol_table[name][attribute_name]
         
-        
