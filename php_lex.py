@@ -100,7 +100,14 @@ def t_php_VARIABLE(t):
         
     return t
 
-
+def t_php_UNQUOTED_STRING(t):
+    r'^[^\s]+[^$\"\'\n]+|((?<=\\)\")+|((?<=\\)\')+|((?<=\\)$)+'
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    return t
 
 t_php_ignore_WHITESAPCE=r'\s'
 t_php_ignore_COMMENT=r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
@@ -108,6 +115,11 @@ t_php_ignore_COMMENT=r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
 def t_php_SPACESHIP(t):
     r'<=>'
     t.value=(t.value,{'type':t.type})
+    return t
+
+def t_php_HERE_NOW_DOC(t):
+    r'<<<'
+    t.value=(t.value,{'type',t.type})
     return t
 
 def t_php_INC(t):
@@ -517,14 +529,7 @@ def t_doubleQuoted_DOUBLE_QUOTE(t):
     t.value=(t.value,{'type':t.type})
     return t
 
-def t_php_UNQUOTED_STRING(t):
-    r'^[^\s]+[^$"\'\n]+|((?<=\\)")+|((?<=\\)\')+|((?<=\\)$)+'
-    if(t.lexer.symbol_table.insert(t.value)!=None):
-        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
-        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
-        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
-    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
-    return t
+
     
 def t_ANY_error(t):
     print('Illegal character at line no. %d and position no. %d, character:%s'% (t.lexer.lineno,col_no(t.lexer.lexpos,t.value),t.value))
