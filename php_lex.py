@@ -2,6 +2,11 @@ import ply.lex as lex
 import re
 from symbol_table import SymbolTable
 
+def col_no(pos,val):
+    last_new_line_pos=string.rfind("\n",0,pos)
+    final_pos=pos-len(val)-last_new_line_pos
+    return final_pos
+
 states=(
 ('php','exclusive'),
 ('sinleQuoted','exclusive'),
@@ -60,12 +65,14 @@ def t_ANY_newline(t):
     t.lexer.lineno+=len(t.value)
     
 def t_begin_php(t):
-    r'<[?%](([Pp][Hh][Pp][ \t\r\n]?)|=)?'
+    r'<[?%](([Pp][Hh][Pp][ \t\r\n]?)|=)?' 
+    t.lexer.lineno+=t.value.count("\n")
     t.lexer.push_state('php')
 
 
 def t_php_end(t):
     r'[?%]>\r?\n?'
+    t.lexer.lineno+=t.value.count("\n")
     t.lexer.pop_state()
 
 
@@ -75,6 +82,8 @@ def t_php_reserved_words(t):
         if(t.type=="IDENTIFIER"):
             if(t.lexer.symbol_table.insert(t.value)!=None):
                 t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+                t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+                t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
             t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
         else:
             t.value=(t.value,{'type':t.type})
@@ -85,6 +94,8 @@ def t_php_VARIABLE(t):
     
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
         
     return t
@@ -426,13 +437,13 @@ def t_INLINE_HTML(t):
     t.lexer.lineno+=t.value.count('\n')
     return t
 
-
-
 def t_php_FLOAT_NUMBER(t):
     r'\d*\.\d+([eE][*-]?\d+)?'
     
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     
     return t
@@ -441,6 +452,8 @@ def t_php_INT_NUMBER(t):
     r'\d+([eE][*-]?\d+)?'
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
@@ -458,6 +471,8 @@ def t_singleQuoted_STRING(t):
     r"[^']+|((?<=\\)')+"
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
@@ -479,6 +494,8 @@ def t_doubleQuoted_STRING(t):
 
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     
     return t
@@ -488,6 +505,8 @@ def t_doubleQuoted_VARIABLE(t):
     
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     
     return t
@@ -502,14 +521,20 @@ def t_php_UNQUOTED_STRING(t):
     r'^[^\s]+[^$"\'\n]+|((?<=\\)")+|((?<=\\)\')+|((?<=\\)$)+'
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
     
 def t_ANY_error(t):
-    print('Illegal character at line no. %d and position no. %d, character:%s'% (t.lexer.lineno,t.lexer.lexpos,t.value))
+    print('Illegal character at line no. %d and position no. %d, character:%s'% (t.lexer.lineno,col_no(t.lexer.lexpos,t.value),t.value))
     t.lexer.skip(1)
     
     
+
+
+
+
 lexer=lex.lex()
 lexer.symbol_table=SymbolTable()
 
