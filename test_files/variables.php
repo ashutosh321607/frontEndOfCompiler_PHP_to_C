@@ -1,32 +1,19 @@
-<?php
-$txt = "Hello world!";
-$x = 5;
-$y = 10.5;
+<?php 
 
-echo $txt;
-echo "<br>";
-echo $x;
-echo "<br>";
-echo $y;
+$x=0;
+$y=5;
+$z=$x+$y;
 
-$x=$y+$x;
-echo $x;
+$a=<<<EOT
+asdfg@@@asd ${x} {$y} ghjkghjkbhj hjkyhujyu
+EOT;
 
-for($x=1;$x<=3;$x++)
-{
-    echo $x;
-    if($x==1)
-        echo "this is equal to 1";
-}
+$x=$y[$z+$y];
 
-function helloWorld()
-{
-    echo "hello world!";
-}
-
-
-$var=<<<EOT
-!!!@@@@
+echo <<<'EOT'
+My name is "$name". I am printing some $foo->foo.
+Now, I am printing some {$foo->bar[1]}.
+This should not print a capital 'A': \x41
 EOT;
 
 ?>

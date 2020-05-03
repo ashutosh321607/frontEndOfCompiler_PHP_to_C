@@ -10,7 +10,10 @@ def col_no(pos,val):
 states=(
 ('php','exclusive'),
 ('sinleQuoted','exclusive'),
-('doubleQuoted','exclusive')
+('doubleQuoted','exclusive'),
+('varname','exclusive'),
+('heredoc','exclusive'),
+('nowdoc','exclusive')
 )
 
 reserved=(
@@ -35,7 +38,7 @@ tokens=reserved+unparsed+(
     'PLUS','MINUS','MUL','DIV','MOD','AND','OR','NOT','XOR','SL',
     'SR','BOOLEAN_AND','BOOLEAN_OR','BOOLEAN_NOT','LESS_THAN','GREATER_THAN','LESS_THAN_OR_EQUAL'
     ,'GRATER_THAN_OR_EQUAL','IS_EQUAL_TO','IS_NOT_EQUAL','IS_IDENTICAL',
-    'IS_NOT_IDENTICAL','SPACESHIP','HERE_NOW_DOC',
+    'IS_NOT_IDENTICAL','SPACESHIP',
     
     'EQUALS','MUL_EQUALS','DIV_EQUAL','MOD_EQUAL','PLUS_EQUAL','MINUS_EQUAL',
     'SL_EQUAL','SR_EQUAL','AND_EQUAL','OR_EQUAL','XOR_EQUAL','CONCAT_EQUAL',
@@ -52,7 +55,8 @@ tokens=reserved+unparsed+(
     'UNQUOTED_STRING',
     
     'ARRAY_CAST', 'NS_SEPARATOR', 'BINARY_CAST', 'BOOL_CAST', 'DOUBLE_CAST', 'INT_CAST', 'OBJECT_CAST',
-    'STRING_CAST', 'UNSET_CAST'
+    'STRING_CAST', 'UNSET_CAST','ENCAPSED_AND_WHITESPACE','STRING_VARNAME','START_HEREDOC','END_HEREDOC',
+    'CURLY_OPEN','DOLLAR_OPEN_CURLY_BRACES','START_NOWDOC','END_NOWDOC'
     
 )
 
@@ -101,8 +105,37 @@ def t_php_VARIABLE(t):
         
     return t
 
-def t_php_UNQUOTED_STRING(t):
-    r'^[^\s]+[^$\"\'\n]+|((?<=\\)\")+|((?<=\\)\')+|((?<=\\)$)+'
+t_php_ignore_WHITESAPCE=r'\s'
+t_php_ignore_COMMENT=r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
+
+
+def t_php_RBRACE(t):
+    r'\}'
+    t.value=(t.value,{'type':t.type})
+    t.lexer.pop_state()
+    return t
+def t_php_LBRACKET(t):
+    r'\['
+    t.value=(t.value,{'type':t.type})
+    t.lexer.push_state('php')
+    return t
+
+def t_php_RBRACKET(t):
+    r'\]'
+    t.value=(t.value,{'type':t.type})
+    t.lexer.pop_state()
+    return t
+
+
+
+def t_php_SINGLE_QUOTE(t):
+    r'\''
+    t.lexer.push_state('singleQuoted')
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_singleQuoted_STRING(t):
+    r"[^']+|((?<=\\)')+"
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
         t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
@@ -110,17 +143,160 @@ def t_php_UNQUOTED_STRING(t):
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
-t_php_ignore_WHITESAPCE=r'\s'
-t_php_ignore_COMMENT=r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
+def t_singleQuoted_SINGLE_QUOTE(t):
+    r"(?<!\\)'"
+    t.lexer.pop_state()
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_php_DOUBLE_QUOTE(t):
+    r'"'
+    t.lexer.push_state('doubleQuoted')
+    t.value=(t.value,{'type':t.type})
+
+    return t
+
+def t_doubleQuoted_STRING(t):
+    r'[^$"]+|((?<=\\)")+|((?<=\\)$)+'
+
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    
+    return t
+
+def t_doubleQuoted_VARIABLE(t):
+    r'\$[A-Za-z_][\w_]*'
+    
+    if(t.lexer.symbol_table.insert(t.value)!=None):
+        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
+    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    
+    return t
+
+def t_doubleQuoted_DOUBLE_QUOTE(t):
+    r'(?<!\\)"'
+    t.lexer.pop_state()
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_doubleQuoted_ENCAPSED_AND_WHITESPACE(t):
+    r'( [^"\\${] | \\(.|\n) | \$(?![A-Za-z_{]) | \{(?!\$) )+'
+    t.lexer.lineno += t.value.count("\n")
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_doubleQuoted_CURLY_OPEN(t):
+    r'\{(?=\$)'
+    t.lexer.push_state('php')
+    t.value=(t.value,{'type':t.type})
+    return t
+
+t_singleQuoted_ENCAPSED_AND_WHITESPACE=t_doubleQuoted_ENCAPSED_AND_WHITESPACE
+
+
+def t_doubleQuoted_DOLLAR_OPEN_CURLY_BRACES(t):
+    r'\$\{'
+    if re.match(r'[A-Za-z_]', peek(t.lexer)):
+        t.lexer.push_state('varname')
+    else:
+        t.lexer.push_state('php')
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_varname_STRING_VARNAME(t):
+    r'[A-Za-z_][\w_]*'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+t_varname_RBRACE=t_php_RBRACE
+t_varname_LBRACKET = t_php_LBRACKET
+
+
+#HEREDOCS
+def t_php_LBRACE(t):
+    r'\{'
+    t.value=(t.value,{'type':t.type})
+    t.lexer.push_state('php')
+    return t
+
+def t_php_START_HEREDOC(t):
+    r'<<<[ \t]*(?P<label>[A-Za-z_][\w_]*)\r?\n'
+    t.lexer.lineno += t.value.count("\n")
+    t.lexer.push_state('heredoc')
+    t.lexer.heredoc_label = t.lexer.lexmatch.group('label')
+    t.value=(t.value,{'type':t.type})
+    return t
+
+
+t_heredoc_CURLY_OPEN = t_doubleQuoted_CURLY_OPEN
+t_heredoc_DOLLAR_OPEN_CURLY_BRACES = t_doubleQuoted_DOLLAR_OPEN_CURLY_BRACES
+t_heredoc_LBRACKET=t_php_LBRACKET
+t_heredoc_LBRACE=t_php_LBRACE
+
+def t_heredoc_END_HEREDOC(t):
+    r'([^$\"\'\n;\{\}]+|((?<=\\)\")+|((?<=\\)\')+|((?<=\\)$)+)|(^[\s]*\s)'
+    if t.value == t.lexer.heredoc_label:
+        del t.lexer.heredoc_label
+        t.lexer.pop_state()
+        t.value=(t.value,{'type':t.type})
+        
+    else:
+        t.type = 'UNQUOTED_STRING'
+        if(t.lexer.symbol_table.insert(t.value)!=None):
+            t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+            t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+            t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
+        t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+    
+    return t
+
+def t_heredoc_ENCAPSED_AND_WHITESPACE(t):
+    r'( [^\n\\${] | \\. | \$(?![A-Za-z_{]) | \{(?!\$) )+\n? | \\?\n'
+    t.lexer.lineno += t.value.count("\n")
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_heredoc_VARIABLE(t):
+    r'\$[A-Za-z_][\w_]*'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+
+
+#NOWDOCS
+
+def t_php_START_NOWDOC(t):
+    r'''<<<[ \t]*'(?P<label>[A-Za-z_][\w_]*)'\r?\n'''
+    t.lexer.lineno += t.value.count("\n")
+    t.lexer.push_state('nowdoc')
+    t.lexer.nowdoc_label = t.lexer.lexmatch.group('label')
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_nowdoc_END_NOWDOC(t):
+    r'(?<=\n)[A-Za-z_][\w_]*'
+    if t.value == t.lexer.nowdoc_label:
+        del t.lexer.nowdoc_label
+        t.lexer.pop_state()
+    else:
+        t.type = 'ENCAPSED_AND_WHITESPACE'
+    t.value=(t.value,{'type':t.type})
+    return t
+
+def t_nowdoc_ENCAPSED_AND_WHITESPACE(t):
+    r'[^\n]*\n'
+    t.lexer.lineno += t.value.count("\n")
+    t.value=(t.value,{'type':t.type})
+    return t
 
 def t_php_SPACESHIP(t):
     r'<=>'
     t.value=(t.value,{'type':t.type})
-    return t
-
-def t_php_HERE_NOW_DOC(t):
-    r'<<<'
-    t.value=(t.value,{'type',t.type})
     return t
 
 def t_php_INC(t):
@@ -423,27 +599,6 @@ def t_php_UNSET_CAST(t):
 	t.value=(t.value,{'type':t.type})
 	return t
 
-
-def t_php_LBRACE(t):
-	r'\{'
-	t.value=(t.value,{'type':t.type})
-	return t
-
-def t_php_RBRACE(t):
-	r'\}'
-	t.value=(t.value,{'type':t.type})
-	return t
-
-def t_php_LBRACKET(t):
-	r'\['
-	t.value=(t.value,{'type':t.type})
-	return t
-
-def t_php_RBRACKET(t):
-	r'\]'
-	t.value=(t.value,{'type':t.type})
-	return t
-
 def t_INLINE_HTML(t):
     r'([^<]|<(?![?]))+'
     t.value=(t.value,{'type':t.type})
@@ -470,74 +625,18 @@ def t_php_INT_NUMBER(t):
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
+  
 
-
-
-
-def t_php_SINGLE_QUOTE(t):
-    r'\''
-    t.lexer.push_state('singleQuoted')
-    t.value=(t.value,{'type':t.type})
-    return t
-
-def t_singleQuoted_STRING(t):
-    r"[^']+|((?<=\\)')+"
-    if(t.lexer.symbol_table.insert(t.value)!=None):
-        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
-        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
-        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
-    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
-    return t
-
-def t_singleQuoted_SINGLE_QUOTE(t):
-    r"(?<!\\)'"
-    t.lexer.pop_state()
-    t.value=(t.value,{'type':t.type})
-    return t
-
-def t_php_DOUBLE_QUOTE(t):
-    r'"'
-    t.lexer.push_state('doubleQuoted')
-    t.value=(t.value,{'type':t.type})
-
-    return t
-
-def t_doubleQuoted_STRING(t):
-    r'[^$"]+|((?<=\\)")+|((?<=\\)$)+'
-
-    if(t.lexer.symbol_table.insert(t.value)!=None):
-        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
-        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
-        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
-    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
-    
-    return t
-
-def t_doubleQuoted_VARIABLE(t):
-    r'\$[A-Za-z_][\w_]*'
-    
-    if(t.lexer.symbol_table.insert(t.value)!=None):
-        t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
-        t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
-        t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
-    t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
-    
-    return t
-
-def t_doubleQuoted_DOUBLE_QUOTE(t):
-    r'(?<!\\)"'
-    t.lexer.pop_state()
-    t.value=(t.value,{'type':t.type})
-    return t
-
-
-    
 def t_ANY_error(t):
     print('Illegal character at line no. %d and position no. %d, character:%s'% (t.lexer.lineno,col_no(t.lexer.lexpos,t.value),t.value))
     t.lexer.skip(1)
     
     
-
+def peek(lexer):
+    try:
+        return lexer.lexdata[lexer.lexpos]
+    except IndexError:
+        return ''
 
 
 
