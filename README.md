@@ -4,7 +4,7 @@
  1. pyhton3
  2. PLY
 
-#### To install PLY on your machine for python3, follow the steps outlined below:
+### To install PLY on your machine for python3, follow the steps outlined below:
  - Download the source code from [link](http://www.dabeaz.com/ply/ply-3.10.tar.gz). <br>
  **Note: Do not use pip to install PLY, it will install a broken distribution on your machine.**
  - Unzip the downloaded zip file
@@ -22,6 +22,6 @@
 
 
 
-#### To execute the lexical analyzer run the following command:
+### To execute the lexical analyzer run the following command:
  - python3 php_lex.py<br>
  **Note: please paste the php code on which you want to perform lexical analysis in test_files/variables.php**
