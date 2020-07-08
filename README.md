@@ -1,4 +1,4 @@
-# frontEndOfCompiler_PHP_to_C
+# Front End of a PHP to C translater
 
 ### Dependencies:
  1. pyhton3

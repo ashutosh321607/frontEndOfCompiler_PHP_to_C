@@ -657,7 +657,7 @@ def t_php_UNSET_CAST(t):
 	return t
 
 def t_INLINE_HTML(t):
-    r'([^<]|<(?![?]))+'
+    r'<\w+[^>]*>(.|\s)+?<\/\w+> | <\w+[^>]*(.|\s)+?\/>'
     t.value=(t.value,{'type':t.type})
     t.lexer.lineno+=t.value.count('\n')
     return t
@@ -701,7 +701,6 @@ lexer=lex.lex()
 lexer.symbol_table=SymbolTable()
 
 with open('./test_files/variables.php') as f:
-    string=""
     lines=f.readlines()
     string="".join(lines)
 
@@ -710,6 +709,5 @@ while(True):
     tok=lexer.token()
     if(tok!=None):
         print(tok.value)
-        print("")
     else:
         break
