@@ -11,6 +11,7 @@ states=(
 ('php','exclusive'),
 ('singleQuoted','exclusive'),
 ('doubleQuoted','exclusive'),
+('quotedvar', 'exclusive'),
 ('varname','exclusive'),
 ('offset', 'exclusive'),
 ('heredoc','exclusive'),
@@ -54,11 +55,13 @@ tokens=reserved+unparsed+(
     
     'DIR','FILE','LINE','CLASS_C','METHOD_C','NS_C','LOGICAL_AND','LOGICAL_OR','LOGICAL_XOR',
     'STRING','VARIABLE','INT_NUMBER','FLOAT_NUMBER','SINGLE_QUOTE','DOUBLE_QUOTE','IDENTIFIER',
-    'UNQUOTED_STRING','NUM_STRING',
+    'UNQUOTED_STRING','NUM_STRING','FUNC_C','HALT_COMPILER','CONSTANT_ENCAPSED_STRING',
     
     'ARRAY_CAST', 'NS_SEPARATOR', 'BINARY_CAST', 'BOOL_CAST', 'DOUBLE_CAST', 'INT_CAST', 'OBJECT_CAST',
     'STRING_CAST', 'UNSET_CAST','ENCAPSED_AND_WHITESPACE','STRING_VARNAME','START_HEREDOC','END_HEREDOC',
-    'CURLY_OPEN','DOLLAR_OPEN_CURLY_BRACES','START_NOWDOC','END_NOWDOC'
+    'CURLY_OPEN','DOLLAR_OPEN_CURLY_BRACES','START_NOWDOC','END_NOWDOC',
+    
+    
     
 )
 
@@ -300,7 +303,7 @@ def t_heredoc_END_HEREDOC(t):
         t.value=(t.value,{'type':t.type})
         
     else:
-        t.type = 'UNQUOTED_STRING'
+        t.type = 'ENCAPSED_AND_WHITESPACE'
         if(t.lexer.symbol_table.insert(t.value)!=None):
             t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
             t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
