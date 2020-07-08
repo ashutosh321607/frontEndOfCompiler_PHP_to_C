@@ -9,11 +9,13 @@ def col_no(pos,val):
 
 states=(
 ('php','exclusive'),
-('sinleQuoted','exclusive'),
+('singleQuoted','exclusive'),
 ('doubleQuoted','exclusive'),
 ('varname','exclusive'),
+('offset', 'exclusive'),
 ('heredoc','exclusive'),
-('nowdoc','exclusive')
+('nowdoc','exclusive'),
+
 )
 
 reserved=(
@@ -52,7 +54,7 @@ tokens=reserved+unparsed+(
     
     'DIR','FILE','LINE','CLASS_C','METHOD_C','NS_C','LOGICAL_AND','LOGICAL_OR','LOGICAL_XOR',
     'STRING','VARIABLE','INT_NUMBER','FLOAT_NUMBER','SINGLE_QUOTE','DOUBLE_QUOTE','IDENTIFIER',
-    'UNQUOTED_STRING',
+    'UNQUOTED_STRING','NUM_STRING',
     
     'ARRAY_CAST', 'NS_SEPARATOR', 'BINARY_CAST', 'BOOL_CAST', 'DOUBLE_CAST', 'INT_CAST', 'OBJECT_CAST',
     'STRING_CAST', 'UNSET_CAST','ENCAPSED_AND_WHITESPACE','STRING_VARNAME','START_HEREDOC','END_HEREDOC',
@@ -126,16 +128,10 @@ def t_php_RBRACKET(t):
     t.lexer.pop_state()
     return t
 
-
-
-def t_php_SINGLE_QUOTE(t):
-    r'\''
-    t.lexer.push_state('singleQuoted')
-    t.value=(t.value,{'type':t.type})
-    return t
-
-def t_singleQuoted_STRING(t):
-    r"[^']+|((?<=\\)')+"
+# String literal
+def t_php_CONSTANT_ENCAPSED_STRING(t):
+    r"'([^\\']|\\(.|\n))*'"
+    t.lexer.lineno += t.value.count("\n")
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
         t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
@@ -143,11 +139,26 @@ def t_singleQuoted_STRING(t):
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
     return t
 
-def t_singleQuoted_SINGLE_QUOTE(t):
-    r"(?<!\\)'"
-    t.lexer.pop_state()
-    t.value=(t.value,{'type':t.type})
-    return t
+# def t_php_SINGLE_QUOTE(t):
+#     r'\''
+#     t.lexer.push_state('singleQuoted')
+#     t.value=(t.value,{'type':t.type})
+#     return t
+
+# def t_singleQuoted_STRING(t):
+#     r"[^']+|((?<=\\)')+"
+#     if(t.lexer.symbol_table.insert(t.value)!=None):
+#         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
+#         t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
+#         t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
+#     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
+#     return t
+
+# def t_singleQuoted_SINGLE_QUOTE(t):
+#     r"(?<!\\)'"
+#     t.lexer.pop_state()
+#     t.value=(t.value,{'type':t.type})
+#     return t
 
 def t_php_DOUBLE_QUOTE(t):
     r'"'
@@ -175,7 +186,7 @@ def t_doubleQuoted_VARIABLE(t):
         t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
         t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
-    
+    t.lexer.push_state('quotedvar')
     return t
 
 def t_doubleQuoted_DOUBLE_QUOTE(t):
@@ -196,9 +207,6 @@ def t_doubleQuoted_CURLY_OPEN(t):
     t.value=(t.value,{'type':t.type})
     return t
 
-t_singleQuoted_ENCAPSED_AND_WHITESPACE=t_doubleQuoted_ENCAPSED_AND_WHITESPACE
-
-
 def t_doubleQuoted_DOLLAR_OPEN_CURLY_BRACES(t):
     r'\$\{'
     if re.match(r'[A-Za-z_]', peek(t.lexer)):
@@ -215,6 +223,52 @@ def t_varname_STRING_VARNAME(t):
 
 t_varname_RBRACE=t_php_RBRACE
 t_varname_LBRACKET = t_php_LBRACKET
+
+
+
+def t_quotedvar_QUOTE(t):
+    r'"'
+    t.lexer.pop_state()
+    t.lexer.pop_state()
+    return t
+
+def t_quotedvar_LBRACKET(t):
+    r'\['
+    t.lexer.begin('offset')
+    return t
+
+def t_quotedvar_ENCAPSED_AND_WHITESPACE(t):
+    r'( [^"\\${] | \\(.|\n) | \$(?![A-Za-z_{]) | \{(?!\$) )+'
+    t.lexer.lineno += t.value.count("\n")
+    t.lexer.pop_state()
+    return t
+
+t_quotedvar_VARIABLE = t_php_VARIABLE
+
+def t_quotedvar_CURLY_OPEN(t):
+    r'\{(?=\$)'
+    t.lexer.begin('php')
+    return t
+
+def t_quotedvar_DOLLAR_OPEN_CURLY_BRACES(t):
+    r'\$\{'
+    if re.match(r'[A-Za-z_]', peek(t.lexer)):
+        t.lexer.begin('varname')
+    else:
+        t.lexer.begin('php')
+    return t
+
+
+def t_offset_IDENTIFIER(t):
+    r'[A-Za-z_][\w_]*'
+    return t
+
+def t_offset_NUM_STRING(t):
+    r'\d+'
+    return t
+
+t_offset_VARIABLE = t_php_VARIABLE
+t_offset_RBRACKET = t_php_RBRACKET
 
 
 #HEREDOCS
@@ -617,7 +671,7 @@ def t_php_FLOAT_NUMBER(t):
     return t
 
 def t_php_INT_NUMBER(t):
-    r'\d+([eE][*-]?\d+)?'
+    r'(\d+([eE][*-]?\d+)?)|(0b[01]+)|(0x[0-9A-Fa-f]+)'
     if(t.lexer.symbol_table.insert(t.value)!=None):
         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
         t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
