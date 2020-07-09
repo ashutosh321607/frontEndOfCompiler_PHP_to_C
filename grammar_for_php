@@ -41,10 +41,13 @@ statement : INLINE_HTML
 statement : expr SEMI_COLON
 statement : UNSET LPAREN unset_variables RPAREN SEMI_COLON
 statement : SEMI_COLON
-statement : TRY LBRACE inner_statement_list RBRACE additional_catches maybe_finally
+{% comment %} statement : TRY LBRACE inner_statement_list RBRACE additional_catches maybe_finally
+fully_qualified_class_name : namespace_name
+additional_catches : additional_catches CATCH LPAREN fully_qualified_class_name VARIABLE RPAREN LBRACE inner_statement_list RBRACE
+                          | empty
 maybe_finally : FINALLY LBRACE inner_statement_list RBRACE
                      | empty
-statement : THROW expr SEMI_COLON
+statement : THROW expr SEMI_COLON {% endcomment %}
 {% comment %} statement : DECLARE LPAREN declare_list RPAREN declare_statement   # doubt
 declare_list : IDENTIFIER EQUALS static_scalar
                     | declare_list COMMA IDENTIFIER EQUALS static_scalar # doubt
@@ -97,26 +100,24 @@ unset_variables : unset_variables COMMA unset_variable
                        | unset_variable
 unset_variable : variable
 function_declaration_statement : FUNCTION is_reference IDENTIFIER LPAREN parameter_list RPAREN LBRACE inner_statement_list RBRACE
-
-
 is_reference : AND
                     | empty
-parameter_list : parameter_list COMMA parameter
+parameter_list : parameter_list COMMA parameter  #doubt
                       | parameter
-parameter_list : empty
+{% comment %} TODO: check this grammar rules {% endcomment %}
+parameter_list : empty   #doubt
+{% comment %} TODO: check this grammar rules {% endcomment %}
 parameter : VARIABLE
                  | AND VARIABLE
                  | VARIABLE EQUALS static_scalar
                  | AND VARIABLE EQUALS static_scalar
 
+expr : variable
 expr : variable EQUALS expr
             | variable EQUALS AND expr
-
-
-
-
 ctor_arguments : LPAREN function_call_parameter_list RPAREN
                       | empty
+
 expr : CLONE expr
 expr : LIST LPAREN assignment_list RPAREN EQUALS expr
 assignment_list : assignment_list COMMA assignment_list_element
