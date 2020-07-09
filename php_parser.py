@@ -1,16 +1,10 @@
 import os
 import sys
-from . import php_lex
-from . import phpast as ast
+import php_lex
 import ply.yacc as yacc
 
-if sys.version_info[0] == 3:
-    string_type = str
-else:
-    string_type = basestring
-
 # Get the token map
-tokens = phplex.tokens
+tokens = php_lex.tokens
 
 precedence = (
     ('left', 'INCLUDE', 'INCLUDE_ONCE', 'EVAL', 'REQUIRE', 'REQUIRE_ONCE'),
