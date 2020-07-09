@@ -657,7 +657,7 @@ def t_php_UNSET_CAST(t):
 	return t
 
 def t_INLINE_HTML(t):
-    r'<\w+[^>]*>(.|\s)+?<\/\w+> | <\w+[^>]*(.|\s)+?\/>'
+    r'<\w+[^>]*>(.|\s)+?<\/\w+>|<\w+[^>]*(.|\s)+?\/?>'
     t.value=(t.value,{'type':t.type})
     t.lexer.lineno+=t.value.count('\n')
     return t
