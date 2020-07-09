@@ -697,17 +697,17 @@ def peek(lexer):
 
 
 
-lexer=lex.lex()
-lexer.symbol_table=SymbolTable()
+# lexer=lex.lex()
+# lexer.symbol_table=SymbolTable()
 
-with open('./test_files/variables.php') as f:
-    lines=f.readlines()
-    string="".join(lines)
+# with open('./test_files/variables.php') as f:
+#     lines=f.readlines()
+#     string="".join(lines)
 
-lexer.input(string)
-while(True):
-    tok=lexer.token()
-    if(tok!=None):
-        print(tok.value)
-    else:
-        break
+# lexer.input(string)
+# while(True):
+#     tok=lexer.token()
+#     if(tok!=None):
+#         print(tok.value)
+#     else:
+#         break
