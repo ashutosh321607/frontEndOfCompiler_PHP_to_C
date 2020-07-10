@@ -222,3 +222,180 @@ def p_expr_assign(p):
 def p_ctor_arguments(p):
     ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
                       | empty'''
+
+
+
+# *************
+
+def p_expr_clone(p):
+    'expr : CLONE expr'
+
+def p_expr_list_assign(p):
+    'expr : LIST LPAREN assignment_list RPAREN EQUALS expr'
+
+def p_assignment_list(p):
+    '''assignment_list : assignment_list COMMA assignment_list_element
+                       | assignment_list_element'''
+
+def p_assignment_list_element(p):
+    '''assignment_list_element : variable
+                               | empty
+                               | LIST LPAREN assignment_list RPAREN'''
+
+def p_variable(p):
+    'variable :  base_variable_with_function_calls'
+
+def p_base_variable_with_function_calls(p):
+    '''base_variable_with_function_calls : base_variable
+                                         | function_call'''
+
+def p_function_call(p):
+    'function_call : namespace_name LPAREN function_call_parameter_list RPAREN'
+
+def p_function_call_variable(p):
+    'function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN'
+
+def p_function_call_backtick_shell_exec(p):
+    'function_call : BACKTICK encaps_list BACKTICK'
+
+def p_method_or_not(p):
+    '''method_or_not : LPAREN function_call_parameter_list RPAREN
+                     | empty'''
+
+def p_variable_properties(p):
+    '''variable_properties : variable_properties variable_property
+                           | empty'''
+
+def p_base_variable(p):
+    'base_variable : simple_indirect_reference'
+
+def p_simple_indirect_reference(p):
+    '''simple_indirect_reference : DOLLAR simple_indirect_reference
+                                 | reference_variable'''
+
+def p_variable_array_offset(p):
+    'variable : variable LBRACKET dim_offset RBRACKET'
+
+def p_reference_variable_array_offset(p):
+    'reference_variable : reference_variable LBRACKET dim_offset RBRACKET'
+
+def p_reference_variable_string_offset(p):
+    'reference_variable : reference_variable LBRACE expr RBRACE'
+
+def p_reference_variable_compound_variable(p):
+    'reference_variable : compound_variable'
+
+def p_expr_string_offset(p):
+    'expr : expr LBRACE dim_offset RBRACE'
+
+def p_compound_variable(p):
+    '''compound_variable : VARIABLE
+                         | DOLLAR LBRACE expr RBRACE'''
+
+def p_dim_offset(p):
+    '''dim_offset : expr
+                  | empty'''
+
+def p_variable_without_objects(p):
+    'variable_without_objects : simple_indirect_reference'
+
+def p_expr_scalar(p):
+    'expr : scalar'
+
+def p_expr_array(p):
+    '''expr : ARRAY LPAREN array_pair_list RPAREN
+            | LBRACKET array_pair_list RBRACKET'''
+
+def p_array_pair_list(p):
+    '''array_pair_list : empty
+                       | non_empty_array_pair_list possible_comma'''
+
+def p_non_empty_array_pair_list_item(p):
+    '''non_empty_array_pair_list : non_empty_array_pair_list COMMA AND variable
+                                 | non_empty_array_pair_list COMMA expr
+                                 | AND variable
+                                 | expr'''
+
+def p_non_empty_array_pair_list_pair(p):
+    '''non_empty_array_pair_list : non_empty_array_pair_list COMMA expr DOUBLE_ARROW AND variable
+                                 | non_empty_array_pair_list COMMA expr DOUBLE_ARROW expr
+                                 | expr DOUBLE_ARROW AND variable
+                                 | expr DOUBLE_ARROW expr'''
+
+def p_possible_comma(p):
+    '''possible_comma : empty
+                      | COMMA'''
+
+def p_function_call_parameter_list(p):
+    '''function_call_parameter_list : function_call_parameter_list COMMA function_call_parameter
+                                    | function_call_parameter'''
+
+def p_function_call_parameter_list_empty(p):
+    'function_call_parameter_list : empty'
+
+def p_function_call_parameter(p):
+    '''function_call_parameter : expr
+                               | AND variable'''
+
+def p_expr_function(p):
+    'expr : FUNCTION is_reference LPAREN parameter_list RPAREN lexical_vars LBRACE inner_statement_list RBRACE'
+
+def p_lexical_vars(p):
+    '''lexical_vars : USE LPAREN lexical_var_list RPAREN
+                    | empty'''
+
+def p_lexical_var_list(p):
+    '''lexical_var_list : lexical_var_list COMMA AND VARIABLE
+                        | lexical_var_list COMMA VARIABLE
+                        | AND VARIABLE
+                        | VARIABLE'''
+
+
+def p_expr_assign_op(p):
+    '''expr : variable PLUS_EQUAL expr
+            | variable MINUS_EQUAL expr
+            | variable MUL_EQUAL expr
+            | variable DIV_EQUAL expr
+            | variable CONCAT_EQUAL expr
+            | variable MOD_EQUAL expr
+            | variable AND_EQUAL expr
+            | variable OR_EQUAL expr
+            | variable XOR_EQUAL expr
+            | variable SL_EQUAL expr
+            | variable SR_EQUAL expr'''
+
+def p_expr_binary_op(p):
+    '''expr : expr BOOLEAN_AND expr
+            | expr BOOLEAN_OR expr
+            | expr LOGICAL_AND expr
+            | expr LOGICAL_OR expr
+            | expr LOGICAL_XOR expr
+            | expr AND expr
+            | expr OR expr
+            | expr XOR expr
+            | expr CONCAT expr
+            | expr PLUS expr
+            | expr MINUS expr
+            | expr MUL expr
+            | expr DIV expr
+            | expr SL expr
+            | expr SR expr
+            | expr MOD expr
+            | expr IS_IDENTICAL expr
+            | expr IS_NOT_IDENTICAL expr
+            | expr IS_EQUAL_TO expr
+            | expr IS_NOT_EQUAL expr
+            | expr LESS_THAN expr
+            | expr LESS_THAN_OR_EQUAL expr
+            | expr GREATER_THAN expr
+            | expr GRATER_THAN_OR_EQUAL expr
+            | expr INSTANCEOF expr
+            | expr INSTANCEOF STATIC'''
+
+def p_expr_unary_op(p):
+    '''expr : PLUS expr
+            | MINUS expr
+            | NOT expr
+            | BOOLEAN_NOT expr'''
+
+# *************
