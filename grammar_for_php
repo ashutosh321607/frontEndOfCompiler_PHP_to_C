@@ -81,8 +81,11 @@ switch_case_list : LBRACE case_list RBRACE
 switch_case_list : COLON case_list ENDSWITCH SEMI_COLON
                         | COLON SEMI_COLON case_list ENDSWITCH SEMI_COLON
 case_list : empty
-                 | case_list CASE expr case_separator inner_statement_list
-                 | case_list DEFAULT case_separator inner_statement_list
+                 | case_list_no_default CASE expr case_separator inner_statement_list
+                 | case_list_no_default DEFAULT case_separator inner_statement_list
+
+case_list_no_default : empty
+                            | case_list_no_default CASE expr case_separator inner_statement_list
 case_separator : COLON
                       | SEMI_COLON
 global_var_list : global_var_list COMMA global_var
@@ -254,7 +257,7 @@ nowdoc_text_content : nowdoc_text_content ENCAPSED_AND_WHITESPACE
                            | empty
 scalar : namespace_name
               
-common_scalar : INT_NUMBER
+common_scalar : INT_NUMBER| FLOAT_NUMBER
 common_scalar : CONSTANT_ENCAPSED_STRING
                      | IDENTIFIER CONSTANT_ENCAPSED_STRING
 static_scalar : common_scalar

@@ -53,8 +53,8 @@ def p_constant_declartions(p):
     ''' constant_declarations : constant_declarations COMMA constant_declaration
                              | constant_declaration'''
 def p_constant_declaration(p):
-    '''constant_declaration : IDENTIFIER EQUALS static_expr'''
-
+    '''constant_declaration : IDENTIFIER EQUALS static_expr'''  
+#TODO: add grammar rules for static_expr
 def p_inner_statment_list(p):
     ''' inner_statement_list : inner_statement_list inner_statement
                             | empty'''
@@ -62,7 +62,7 @@ def p_inner_statment_list(p):
 def p_inner_statment(p):
     ''' inner_statement : statement
                        | function_declaration_statement'''
-
+# less important
 def p_inner_statement_yield(p):
     ''' inner_statement : YIELD SEMI_COLON
                        | YIELD expr SEMI_COLON'''
@@ -71,8 +71,10 @@ def p_statement_block(p):
     '''statement : LBRACE inner_statement_list RBRACE '''
     
 def p_statement_if(p):
-    '''statement : IF LPAREN expr RPAREN statement elseif_list else_single
+    '''statement : IF LPAREN expr RPAREN statement elseif_list else_single   
                  | IF LPAREN expr RPAREN COLON inner_statement_list new_elseif_list new_else_single ENDIF SEMI_COLON '''
+ #why not inner_statement_list in first rule instead of statement
+# my observation: for new type of writing if else(colon form) it is inner_statement_list and for old method it is statment
 
 def p_statement_while(p):
     ''' statement : WHILE LPAREN expr RPAREN while_statement'''
@@ -107,7 +109,7 @@ def p_statement_static(p):
 def p_statement_echo(p):
     '''statement : ECHO echo_expr_list SEMI_COLON '''
 def p_statement_inline_html(p):
-    ''' statement : ECHO echo_expr_list SEMI_COLON'''
+    ''' statement : INLINE_HTML'''
 def p_statement_expr(p):
     ''' statement : expr SEMI_COLON'''
     
@@ -151,6 +153,7 @@ def p_for_statement(p):
 def p_switch_case_list(p):
     '''switch_case_list : LBRACE case_list RBRACE
                         | LBRACE SEMI_COLON case_list RBRACE '''
+# explore the above rule
 
 def p_switch_case_list_colon(p):
     '''switch_case_list : COLON case_list ENDSWITCH SEMI_COLON
@@ -158,15 +161,20 @@ def p_switch_case_list_colon(p):
     
 def p_case_list(p):
     '''case_list : empty
-                 | case_list CASE expr case_separator inner_statement_list
-                 | case_list DEFAULT case_separator inner_statement_list '''
+                 | case_list_no_default CASE expr case_separator inner_statement_list
+                 | case_list_no_default DEFAULT case_separator inner_statement_list '''
+ #added case_list_no_default  
+         
+def p_case_list_no_default(p):
+    '''case_list_no_default : empty
+                            | case_list_no_default CASE expr case_separator inner_statement_list '''
 def p_case_separator(p):
     '''case_separator : COLON
                       | SEMI_COLON '''
 def p_global_var_list(p):
     '''global_var_list : global_var_list COMMA global_var
                        | global_var '''                      
-                       
+#here                       
 def p_global_var(p):
     '''global_var : VARIABLE
                   | DOLLAR variable
@@ -222,7 +230,7 @@ def p_expr_assign(p):
 def p_ctor_arguments(p):
     ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
                       | empty'''
-
+#understand this
 
 
 # *************
@@ -399,3 +407,5 @@ def p_expr_unary_op(p):
             | BOOLEAN_NOT expr'''
 
 # *************
+
+    
