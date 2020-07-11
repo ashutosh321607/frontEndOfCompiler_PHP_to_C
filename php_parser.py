@@ -386,12 +386,16 @@ def p_base_variable_with_function_calls(p):
 
 
 def p_function_call(p):
-    'function_call : namespace_name LPAREN function_call_parameter_list RPAREN'
+    ''' function_call : IDENTIFIER fucntion_call_body
+                        | ARRAY fucntion_call_body '''
     pass
-
+def p_function_call_body(p):
+    ''' fucntion_call_body : LPAREN nonempty_function_call_parameter_list RPAREN
+                            | LPAREN empty RPAREN '''
 
 def p_function_call_variable(p):
-    'function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN'
+    '''function_call : variable_without_objects LPAREN nonempty_function_call_parameter_list RPAREN
+                    | variable_without_objects LPAREN empty RPAREN '''
     pass
 
 
@@ -478,10 +482,8 @@ def p_array_pair_list(p):
 
 
 def p_non_empty_array_pair_list_item(p):
-    '''non_empty_array_pair_list : non_empty_array_pair_list COMMA AND variable
-                                 | non_empty_array_pair_list COMMA expr
-                                 | AND variable
-                                 | expr'''
+    '''non_empty_array_pair_list : nonempty_function_call_parameter_list'''
+#modified
     pass
 
 
@@ -499,16 +501,16 @@ def p_possible_comma(p):
     pass
 
 
-def p_function_call_parameter_list(p):
-    '''function_call_parameter_list : function_call_parameter_list COMMA function_call_parameter
+# def p_function_call_parameter_list(p):
+#     '''function_call_parameter_list : nonempty_function_call_parameter_list '''
+#     #modified
+#     pass
+#modified
+
+def p_nonempty_function_call_parameter_list_empty(p):
+    '''nonempty_function_call_parameter_list : nonempty_function_call_parameter_list COMMA function_call_parameter
                                     | function_call_parameter'''
-    pass
-
-
-def p_function_call_parameter_list_empty(p):
-    'function_call_parameter_list : empty'
-    pass
-
+#added
 
 def p_function_call_parameter(p):
     '''function_call_parameter : expr
@@ -733,7 +735,7 @@ def p_nowdoc_text_content(p):
 
 
 def p_scalar_namespace_name(p):
-    '''scalar : namespace_name'''
+    '''scalar : IDENTIFIER'''   # modified from namespace to identifier
     pass
 
 
@@ -796,7 +798,7 @@ def p_multiple_encapsed(p):
 
 
 def p_static_scalar_namespace_name(p):
-    '''static_scalar : namespace_name'''
+    '''static_scalar : IDENTIFIER''' # modified from namespace to identifier
     pass
 
 
@@ -864,10 +866,9 @@ def p_static_expr_group(p):
     pass
 
 
-def p_namespace_name(p):
-    '''namespace_name : IDENTIFIER
-                      | ARRAY'''
-    pass
+# def p_namespace_name(p):
+#     '''namespace_name : IDENTIFIER'''
+#     pass
 
 
 def p_encaps_list(p):
