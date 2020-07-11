@@ -118,8 +118,8 @@ parameter : VARIABLE
 expr : variable
 expr : variable EQUALS expr
             | variable EQUALS AND expr
-ctor_arguments : LPAREN function_call_parameter_list RPAREN
-                      | empty
+{% comment %} ctor_arguments : LPAREN function_call_parameter_list RPAREN
+                      | empty {% endcomment %}
 
 expr : CLONE expr
 expr : LIST LPAREN assignment_list RPAREN EQUALS expr
@@ -135,12 +135,12 @@ function_call : namespace_name LPAREN function_call_parameter_list RPAREN
                      
 
 function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN
-function_call : BACKTICK encaps_list BACKTICK
+{% comment %} function_call : BACKTICK encaps_list BACKTICK {% endcomment %}
 
-method_or_not : LPAREN function_call_parameter_list RPAREN
-                     | empty
-variable_properties : variable_properties variable_property
-                           | empty
+{% comment %} method_or_not : LPAREN function_call_parameter_list RPAREN
+                     | empty {% endcomment %}
+{% comment %} variable_properties : variable_properties variable_property
+                           | empty {% endcomment %}
 base_variable : simple_indirect_reference
 
 simple_indirect_reference : DOLLAR simple_indirect_reference
@@ -321,3 +321,20 @@ encaps_var_offset : IDENTIFIER
 encaps_var_offset : NUM_STRING
 encaps_var_offset : VARIABLE
 empty : 
+
+
+{% comment %} missed rules {% endcomment %}
+
+'expr : ARRAY_CAST expr'
+{% comment %} 'expr : OBJECT_CAST expr' {% endcomment %}
+'expr : BOOL_CAST expr'
+'expr : UNSET_CAST expr'
+'expr : BINARY_CAST expr'
+'expr : ISSET LPAREN isset_variables RPAREN'
+'common_scalar : FUNC_C'
+'common_scalar : METHOD_C'
+'common_scalar : LINE'
+'common_scalar : FILE'
+'common_scalar : DIR'
+'expr : STRING_CAST expr'
+'expr : DOUBLE_CAST expr'

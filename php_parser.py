@@ -30,15 +30,15 @@ precedence = (
     ('right', 'BOOLEAN_NOT'),
     ('nonassoc', 'INSTANCEOF'),
     ('right', 'NOT', 'INC', 'DEC', 'INT_CAST', 'DOUBLE_CAST', 'STRING_CAST',
-     'ARRAY_CAST', 'OBJECT_CAST', 'BOOL_CAST', 'UNSET_CAST', 'AT'),
+     'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'AT'),
     ('right', 'LBRACKET'),
-    ('nonassoc', 'NEW', 'CLONE'),
+    ('nonassoc',  'CLONE'),
     # ('left', 'ELSEIF'),
     # ('left', 'ELSE'),
     ('left', 'ENDIF'),
-    ('right', 'STATIC', 'ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'),
+    ('right', 'STATIC'),
 )
-
+#, 'OBJECT_CAST','NEW','ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'
 
 def p_start(p):
     'start : top_statement_list'
@@ -318,7 +318,7 @@ def p_parameter_list(p):
 
 
 def p_non_empty_parameter_list(p):
-    '''non_empty_parameter_list: non_empty_parameter_list COMMA parameter 
+    '''non_empty_parameter_list : non_empty_parameter_list COMMA parameter 
                                 | parameter'''
     pass
 
@@ -342,10 +342,10 @@ def p_expr_assign(p):
     pass
 
 
-def p_ctor_arguments(p):
-    ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
-                      | empty'''
-    pass
+# def p_ctor_arguments(p):
+#     ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
+#                       | empty'''
+#     pass
 # understand this
 
 
@@ -395,21 +395,16 @@ def p_function_call_variable(p):
     pass
 
 
-def p_function_call_backtick_shell_exec(p):
-    'function_call : BACKTICK encaps_list BACKTICK'
-    pass
+# def p_method_or_not(p):
+#     '''method_or_not : LPAREN function_call_parameter_list RPAREN
+#                      | empty'''
+#     pass
 
 
-def p_method_or_not(p):
-    '''method_or_not : LPAREN function_call_parameter_list RPAREN
-                     | empty'''
-    pass
-
-
-def p_variable_properties(p):
-    '''variable_properties : variable_properties variable_property
-                           | empty'''
-    pass
+# def p_variable_properties(p):
+#     '''variable_properties : variable_properties variable_property
+#                            | empty'''
+#     pass
 
 
 def p_base_variable(p):
@@ -530,7 +525,7 @@ def p_lexical_vars(p):
     '''lexical_vars : USE LPAREN lexical_var_list RPAREN
                     | empty'''
     pass
-
+#doubt is the above rule required
 
 def p_lexical_var_list(p):
     '''lexical_var_list : lexical_var_list COMMA AND VARIABLE
@@ -621,6 +616,32 @@ def p_expr_cast_int(p):
     'expr : INT_CAST expr'
     pass
 
+#add here
+def p_expr_cast_array(p):
+    'expr : ARRAY_CAST expr'
+    pass
+
+def p_expr_cast_string(p):
+    'expr : STRING_CAST expr'
+    
+def p_expr_cast_double(p):
+    'expr : DOUBLE_CAST expr'
+
+def p_expr_cast_bool(p):
+    'expr : BOOL_CAST expr'
+    pass
+
+def p_expr_cast_unset(p):
+    'expr : UNSET_CAST expr'
+    pass
+
+def p_expr_cast_binary(p):
+    'expr : BINARY_CAST expr'
+    pass
+
+def p_expr_isset(p):
+    'expr : ISSET LPAREN isset_variables RPAREN'
+    pass
 
 def p_isset_variables(p):
     '''isset_variables : isset_variables COMMA variable
@@ -700,6 +721,11 @@ def p_scalar(p):
     pass
 
 
+def p_scalar_heredoc(p):
+    'scalar_heredoc : START_HEREDOC encaps_list END_HEREDOC'
+    pass
+
+
 def p_nowdoc_text_content(p):
     '''nowdoc_text_content : nowdoc_text_content ENCAPSED_AND_WHITESPACE
                            | empty'''
@@ -712,7 +738,8 @@ def p_scalar_namespace_name(p):
 
 
 def p_common_scalar_number(p):
-    'common_scalar : INT_NUMBER| FLOAT_NUMBER'
+    ''' common_scalar : INT_NUMBER 
+                      | FLOAT_NUMBER'''
     pass
 
 
@@ -720,6 +747,30 @@ def p_common_scalar_string(p):
     '''common_scalar : CONSTANT_ENCAPSED_STRING
                      | IDENTIFIER CONSTANT_ENCAPSED_STRING'''
     pass
+
+
+#add here
+def p_common_scalar_magic_func(p):
+    'common_scalar : FUNC_C'
+    pass
+
+def p_common_scalar_magic_method(p):
+    'common_scalar : METHOD_C'
+    pass
+
+def p_common_scalar_magic_line(p):
+    'common_scalar : LINE'
+    pass
+
+def p_common_scalar_magic_file(p):
+    'common_scalar : FILE'
+    pass
+
+def p_common_scalar_magic_dir(p):
+    'common_scalar : DIR'
+    pass
+
+
 
 
 def p_static_scalar(p):
@@ -731,14 +782,10 @@ def p_static_scalar(p):
     pass
 
 
-def p_class_name_constant(p):
-    'class_name_constant : class_name DOUBLE_COLON CLASS'
-    pass
-
 
 def p_static_heredoc(p):
     '''static_heredoc : START_HEREDOC multiple_encapsed END_HEREDOC
-                        | START_HEREDOC encaps_list END_HEREDOC'''
+                        '''
     pass
 
 
