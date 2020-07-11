@@ -616,6 +616,32 @@ def p_expr_cast_int(p):
     'expr : INT_CAST expr'
     pass
 
+#add here
+def p_expr_cast_array(p):
+    'expr : ARRAY_CAST expr'
+    pass
+
+def p_expr_cast_string(p):
+    'expr : STRING_CAST expr'
+    
+def p_expr_cast_double(p):
+    'expr : DOUBLE_CAST expr'
+
+def p_expr_cast_bool(p):
+    'expr : BOOL_CAST expr'
+    pass
+
+def p_expr_cast_unset(p):
+    'expr : UNSET_CAST expr'
+    pass
+
+def p_expr_cast_binary(p):
+    'expr : BINARY_CAST expr'
+    pass
+
+def p_expr_isset(p):
+    'expr : ISSET LPAREN isset_variables RPAREN'
+    pass
 
 def p_isset_variables(p):
     '''isset_variables : isset_variables COMMA variable
@@ -721,6 +747,30 @@ def p_common_scalar_string(p):
     '''common_scalar : CONSTANT_ENCAPSED_STRING
                      | IDENTIFIER CONSTANT_ENCAPSED_STRING'''
     pass
+
+
+#add here
+def p_common_scalar_magic_func(p):
+    'common_scalar : FUNC_C'
+    pass
+
+def p_common_scalar_magic_method(p):
+    'common_scalar : METHOD_C'
+    pass
+
+def p_common_scalar_magic_line(p):
+    'common_scalar : LINE'
+    pass
+
+def p_common_scalar_magic_file(p):
+    'common_scalar : FILE'
+    pass
+
+def p_common_scalar_magic_dir(p):
+    'common_scalar : DIR'
+    pass
+
+
 
 
 def p_static_scalar(p):
@@ -869,55 +919,6 @@ def p_encaps_var_offset_variable(p):
 def p_empty(p):
     'empty : '
     pass
-
-
-# Adding the missed rules
-
-def p_expr_cast_array(p):
-    'expr : ARRAY_CAST expr'
-    pass
-
-def p_expr_cast_object(p):
-    'expr : OBJECT_CAST expr'
-    pass
-
-def p_expr_cast_bool(p):
-    'expr : BOOL_CAST expr'
-    pass
-
-def p_expr_cast_unset(p):
-    'expr : UNSET_CAST expr'
-    pass
-
-def p_expr_cast_binary(p):
-    'expr : BINARY_CAST expr'
-    pass
-
-def p_expr_isset(p):
-    'expr : ISSET LPAREN isset_variables RPAREN'
-    pass
-
-def p_common_scalar_magic_func(p):
-    'common_scalar : FUNC_C'
-    pass
-
-def p_common_scalar_magic_method(p):
-    'common_scalar : METHOD_C'
-    pass
-
-def p_common_scalar_magic_line(p):
-    'common_scalar : LINE'
-    pass
-
-def p_common_scalar_magic_file(p):
-    'common_scalar : FILE'
-    pass
-
-def p_common_scalar_magic_dir(p):
-    'common_scalar : DIR'
-    pass
-
-# Done adding the missed rules
 
 
 # Error rule for syntax errors

@@ -326,7 +326,7 @@ empty :
 {% comment %} missed rules {% endcomment %}
 
 'expr : ARRAY_CAST expr'
-'expr : OBJECT_CAST expr'
+{% comment %} 'expr : OBJECT_CAST expr' {% endcomment %}
 'expr : BOOL_CAST expr'
 'expr : UNSET_CAST expr'
 'expr : BINARY_CAST expr'
@@ -336,3 +336,5 @@ empty :
 'common_scalar : LINE'
 'common_scalar : FILE'
 'common_scalar : DIR'
+'expr : STRING_CAST expr'
+'expr : DOUBLE_CAST expr'
