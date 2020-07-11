@@ -871,6 +871,55 @@ def p_empty(p):
     pass
 
 
+# Adding the missed rules
+
+def p_expr_cast_array(p):
+    'expr : ARRAY_CAST expr'
+    pass
+
+def p_expr_cast_object(p):
+    'expr : OBJECT_CAST expr'
+    pass
+
+def p_expr_cast_bool(p):
+    'expr : BOOL_CAST expr'
+    pass
+
+def p_expr_cast_unset(p):
+    'expr : UNSET_CAST expr'
+    pass
+
+def p_expr_cast_binary(p):
+    'expr : BINARY_CAST expr'
+    pass
+
+def p_expr_isset(p):
+    'expr : ISSET LPAREN isset_variables RPAREN'
+    pass
+
+def p_common_scalar_magic_func(p):
+    'common_scalar : FUNC_C'
+    pass
+
+def p_common_scalar_magic_method(p):
+    'common_scalar : METHOD_C'
+    pass
+
+def p_common_scalar_magic_line(p):
+    'common_scalar : LINE'
+    pass
+
+def p_common_scalar_magic_file(p):
+    'common_scalar : FILE'
+    pass
+
+def p_common_scalar_magic_dir(p):
+    'common_scalar : DIR'
+    pass
+
+# Done adding the missed rules
+
+
 # Error rule for syntax errors
 def p_error(t):
     if t:
