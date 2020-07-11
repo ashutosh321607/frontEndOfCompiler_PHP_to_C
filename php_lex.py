@@ -65,7 +65,7 @@ tokens = reserved+unparsed+(
 
     'ARRAY_CAST', 'BINARY_CAST', 'BOOL_CAST', 'DOUBLE_CAST', 'INT_CAST',
     'STRING_CAST', 'UNSET_CAST', 'ENCAPSED_AND_WHITESPACE', 'STRING_VARNAME', 'START_HEREDOC', 'END_HEREDOC',
-    'CURLY_OPEN', 'DOLLAR_OPEN_CURLY_BRACES', 'START_NOWDOC', 'END_NOWDOC',
+    'CURLY_OPEN', 'DOLLAR_OPEN_CURLY_BRACES', 'START_NOWDOC', 'END_NOWDOC'
 
     #'STRING','SINGLE_QUOTE','OBJECT_CAST', 'CLASS_C','NS_SEPARATOR','NS_C',
     # 'SPACESHIP','UNQUOTED_STRING','NULL_COALESCING',(implment if time is available)
@@ -195,17 +195,17 @@ def t_php_DOUBLE_QUOTE(t):
     return t
 
 
-def t_doubleQuoted_STRING(t):
-    r'[^$"]+|((?<=\\)")+|((?<=\\)$)+'
+# def t_doubleQuoted_STRING(t):
+#     r'[^$"]+|((?<=\\)")+|((?<=\\)$)+'
 
-    if(t.lexer.symbol_table.insert(t.value) != None):
-        t.lexer.symbol_table.set_attribute(t.value, 'type', t.type)
-        t.lexer.symbol_table.set_attribute(t.value, 'line_no', t.lexer.lineno)
-        t.lexer.symbol_table.set_attribute(
-            t.value, 'col', col_no(t.lexer.lexpos, t.value))
-    t.value = (t.value, t.lexer.symbol_table.lookup(t.value))
+#     if(t.lexer.symbol_table.insert(t.value) != None):
+#         t.lexer.symbol_table.set_attribute(t.value, 'type', t.type)
+#         t.lexer.symbol_table.set_attribute(t.value, 'line_no', t.lexer.lineno)
+#         t.lexer.symbol_table.set_attribute(
+#             t.value, 'col', col_no(t.lexer.lexpos, t.value))
+#     t.value = (t.value, t.lexer.symbol_table.lookup(t.value))
 
-    return t
+#     return t
 
 
 def t_doubleQuoted_VARIABLE(t):
@@ -889,7 +889,7 @@ def run_on_argv1():
 # lexer=lex.lex()
 # lexer.symbol_table=SymbolTable()
 
-# with open('./test_files/variables.php') as f:
+# with open('./variables.php') as f:
 #     lines=f.readlines()
 #     string="".join(lines)
 
