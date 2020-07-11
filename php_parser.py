@@ -920,22 +920,16 @@ def p_empty(p):
     'empty : '
     pass
 
-
 # Error rule for syntax errors
 def p_error(t):
     if t:
-        raise SyntaxError('invalid syntax',
-                          (None, t.lineno, t.lexpos, t.value))
+        raise SyntaxError('invalid syntax', (None, t.lineno, None, t.value))
     else:
-        raise SyntaxError('unexpected EOF while parsing',
-                          (None, None, None, None))
+        raise SyntaxError('unexpected EOF while parsing', (None, None, None, None))
 
 # Build the grammar
-
-
-def make_parser(debug=False):
+def make_parser(debug=True):
     return yacc.yacc(debug=debug)
-
 
 def main():
     import argparse
@@ -969,7 +963,6 @@ def main():
                     with open(os.path.join(root, fpath), 'r') as f:
                         run_parser(parser, f, args.quiet, args.debug)
 
-
 def run_parser(parser, source, quiet, debug):
     s = source.read()
     lexer = php_lex.lexer
@@ -988,14 +981,10 @@ def run_parser(parser, source, quiet, debug):
         raise
 
     if not quiet:
-        import pprint
+        from pprint import pprint
         for item in result:
             if hasattr(item, 'generic'):
                 item = item.generic()
-            pprint.pprint(item)
+            pprint(item)
 
     parser.restart()
-
-
-# main()
-make_parser(True)
