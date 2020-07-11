@@ -110,7 +110,7 @@ def t_php_reserved_words(t):
                 t.value, 'col', col_no(t.lexer.lexpos, t.value))
         t.value = (t.value, t.lexer.symbol_table.lookup(t.value))
     else:
-        t.value = (t.value, {'type': t.type})
+        t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -128,26 +128,32 @@ def t_php_VARIABLE(t):
 
 
 t_php_ignore_WHITESAPCE = r'\s'
-t_php_ignore_COMMENT = r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
+# t_php_ignore_COMMENT = r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
 
+def t_php_COMMENT(t):
+    r'/\*(.|\n)*?\*/ | //([^?%\n]|[?%](?!>))*\n? | \#([^?%\n]|[?%](?!>))*\n?'
+    t.lexer.lineno += t.value.count("\n")
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
+    return t
+    
 
 def t_php_RBRACE(t):
     r'\}'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     t.lexer.pop_state()
     return t
 
 
 def t_php_LBRACKET(t):
     r'\['
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     t.lexer.push_state('php')
     return t
 
 
 def t_php_RBRACKET(t):
     r'\]'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     t.lexer.pop_state()
     return t
 
@@ -190,7 +196,7 @@ def t_php_CONSTANT_ENCAPSED_STRING(t):
 def t_php_DOUBLE_QUOTE(t):
     r'"'
     t.lexer.push_state('doubleQuoted')
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
 
     return t
 
@@ -216,7 +222,7 @@ def t_doubleQuoted_VARIABLE(t):
         t.lexer.symbol_table.set_attribute(t.value, 'line_no', t.lexer.lineno)
         t.lexer.symbol_table.set_attribute(
             t.value, 'col', col_no(t.lexer.lexpos, t.value))
-    t.value = (t.value, t.lexer.symbol_table.lookup(t.value))
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     t.lexer.push_state('quotedvar')
     return t
 
@@ -224,21 +230,21 @@ def t_doubleQuoted_VARIABLE(t):
 def t_doubleQuoted_DOUBLE_QUOTE(t):
     r'(?<!\\)"'
     t.lexer.pop_state()
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_doubleQuoted_ENCAPSED_AND_WHITESPACE(t):
     r'( [^"\\${] | \\(.|\n) | \$(?![A-Za-z_{]) | \{(?!\$) )+'
     t.lexer.lineno += t.value.count("\n")
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_doubleQuoted_CURLY_OPEN(t):
     r'\{(?=\$)'
     t.lexer.push_state('php')
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -248,13 +254,13 @@ def t_doubleQuoted_DOLLAR_OPEN_CURLY_BRACES(t):
         t.lexer.push_state('varname')
     else:
         t.lexer.push_state('php')
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_varname_STRING_VARNAME(t):
     r'[A-Za-z_][\w_]*'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -266,12 +272,14 @@ def t_quotedvar_QUOTE(t):
     r'"'
     t.lexer.pop_state()
     t.lexer.pop_state()
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_quotedvar_LBRACKET(t):
     r'\['
     t.lexer.begin('offset')
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -279,6 +287,7 @@ def t_quotedvar_ENCAPSED_AND_WHITESPACE(t):
     r'( [^"\\${] | \\(.|\n) | \$(?![A-Za-z_{]) | \{(?!\$) )+'
     t.lexer.lineno += t.value.count("\n")
     t.lexer.pop_state()
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -288,6 +297,7 @@ t_quotedvar_VARIABLE = t_php_VARIABLE
 def t_quotedvar_CURLY_OPEN(t):
     r'\{(?=\$)'
     t.lexer.begin('php')
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -297,16 +307,19 @@ def t_quotedvar_DOLLAR_OPEN_CURLY_BRACES(t):
         t.lexer.begin('varname')
     else:
         t.lexer.begin('php')
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_offset_IDENTIFIER(t):
     r'[A-Za-z_][\w_]*'
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_offset_NUM_STRING(t):
     r'\d+'
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -317,8 +330,9 @@ t_offset_RBRACKET = t_php_RBRACKET
 # HEREDOCS
 def t_php_LBRACE(t):
     r'\{'
-    t.value = (t.value, {'type': t.type})
+    
     t.lexer.push_state('php')
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -327,7 +341,8 @@ def t_php_START_HEREDOC(t):
     t.lexer.lineno += t.value.count("\n")
     t.lexer.push_state('heredoc')
     t.lexer.heredoc_label = t.lexer.lexmatch.group('label')
-    t.value = (t.value, {'type': t.type})
+    
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -342,7 +357,7 @@ def t_heredoc_END_HEREDOC(t):
     if t.value == t.lexer.heredoc_label:
         del t.lexer.heredoc_label
         t.lexer.pop_state()
-        t.value = (t.value, {'type': t.type})
+        t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
 
     else:
         t.type = 'ENCAPSED_AND_WHITESPACE'
@@ -360,13 +375,13 @@ def t_heredoc_END_HEREDOC(t):
 def t_heredoc_ENCAPSED_AND_WHITESPACE(t):
     r'( [^\n\\${] | \\. | \$(?![A-Za-z_{]) | \{(?!\$) )+\n? | \\?\n'
     t.lexer.lineno += t.value.count("\n")
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_heredoc_VARIABLE(t):
     r'\$[A-Za-z_][\w_]*'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -377,7 +392,7 @@ def t_php_START_NOWDOC(t):
     t.lexer.lineno += t.value.count("\n")
     t.lexer.push_state('nowdoc')
     t.lexer.nowdoc_label = t.lexer.lexmatch.group('label')
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
@@ -388,362 +403,362 @@ def t_nowdoc_END_NOWDOC(t):
         t.lexer.pop_state()
     else:
         t.type = 'ENCAPSED_AND_WHITESPACE'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_nowdoc_ENCAPSED_AND_WHITESPACE(t):
     r'[^\n]*\n'
     t.lexer.lineno += t.value.count("\n")
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_SPACESHIP(t):
     r'<=>'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_INC(t):
     r'\+\+'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_DEC(t):
     r'--'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_DOUBLE_ARROW(t):
     r'=>'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_BOOLEAN_AND(t):
     r'&&'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_BOOLEAN_OR(t):
     r'\|\|'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_BOOLEAN_NOT(t):
     r'!'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_LESS_THAN_OR_EQUAL(t):
     r'<='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_GREATER_THAN_OR_EQUAL(t):
     r'>='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_LESS_THAN(t):
     r'<'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_GREATER_THAN(t):
     r'>'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_IS_EQUAL_TO(t):
     r'=='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_IS_NOT_EQUAL(t):
     r'(!=(?!=))|(<>)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_IS_IDENTICAL(t):
     r'==='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_IS_NOT_IDENTICAL(t):
     r'!=='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_EQUALS(t):
     r'='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_MUL_EQUAL(t):
     r'\*='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_DIV_EQUAL(t):
     r'/='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_MOD_EQUAL(t):
     r'%='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_PLUS_EQUAL(t):
     r'\+='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_MINUS_EQUAL(t):
     r'-='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_SL_EQUAL(t):
     r'<<='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_SR_EQUAL(t):
     r'>>='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_AND_EQUAL(t):
     r'&='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_OR_EQUAL(t):
     r'\|='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_XOR_EQUAL(t):
     r'\^='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_CONCAT_EQUAL(t):
     r'\.='
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_HERE_NOW_DOC(t):
     r'<<<'
-    t.value = (t.value, {'type': type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_PLUS(t):
     r'\+'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_MINUS(t):
     r'-'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_MUL(t):
     r'\*'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_DIV(t):
     r'/'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_MOD(t):
     r'%'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_AND(t):
     r'&'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_OR(t):
     r'\|'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_NOT(t):
     r'~'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_XOR(t):
     r'\^'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_SL(t):
     r'<<'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_SR(t):
     r'>>'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_CONCAT(t):
     r'\.(?!\d|=)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_LPAREN(t):
     r'\('
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_RPAREN(t):
     r'\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_DOLLAR(t):
     r'\$'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_COMMA(t):
     r','
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_QUESTION(t):
     r'\?'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_COLON(t):
     r':'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_SEMI_COLON(t):
     r';'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_AT(t):
     r'@'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_NS_SEPARATOR(t):
     r'\\'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_ARRAY_CAST(t):
     r'\([\t]*[Aa][Rr][Rr][Aa][Yy][\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_BINARY_CAST(t):
     r'\([ \t]*[Bb][Ii][Nn][Aa][Rr][Yy][ \t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_BOOL_CAST(t):
     r'\([\t]*[Bb][Oo][Oo][Ll]([Ee][Aa][Nn])?[\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_DOUBLE_CAST(t):
     r'\([\t]*([Rr][Ee][Aa][Ll]|[Dd][Oo][Uu][Bb][Ll][Ee]|[Ff][Ll][Oo][Aa][Tt])[\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_INT_CAST(t):
     r'\([\t]*[Ii][Nn][Tt]([Ee][Gg][Ee][Rr])?[\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_OBJECT_CAST(t):
     r'\([\t]*[Oo][Bb][Jj][Ee][Cc][Tt][\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_STRING_CAST(t):
     r'\([\t]*[Ss][Tt][Rr][Ii][Nn][Gg][\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_php_UNSET_CAST(t):
     r'\([\t]*[Uu][Nn][Ss][Ee][Tt][\t]*\)'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     return t
 
 
 def t_INLINE_HTML(t):
     r'<\w+[^>]*>(.|\s)+?<\/\w+>|<\w+[^>]*(.|\s)+?\/?>'
-    t.value = (t.value, {'type': t.type})
+    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
     t.lexer.lineno += t.value.count('\n')
     return t
 
@@ -833,7 +848,7 @@ class FilteredLexer(object):
                 if self.last_token and self.last_token.type == 'SEMI_COLON':
                     # Rewrite ?><?php as a semicolon.
                     t.type = 'SEMI_COLON'
-                    t.value = (t.value, {'type': t.type})
+                    t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
                     break
                 self.last_token = t
                 t = self.next_lexer_token()

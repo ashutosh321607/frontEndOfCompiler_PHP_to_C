@@ -101,6 +101,7 @@ def p_statement_block(p):
 def p_statement_if(p):
     '''statement : IF LPAREN expr RPAREN statement elseif_list else_single   
                  | IF LPAREN expr RPAREN COLON inner_statement_list new_elseif_list new_else_single ENDIF SEMI_COLON '''
+    print("reached if")
 # why not inner_statement_list in first rule instead of statement
 # my observation: for new type of writing if else(colon form) it is inner_statement_list and for old method it is statment
     pass
@@ -345,11 +346,6 @@ def p_expr_assign(p):
     pass
 
 
-# def p_ctor_arguments(p):
-#     ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
-#                       | empty'''
-#     pass
-# understand this
 
 
 # *************
@@ -390,31 +386,21 @@ def p_base_variable_with_function_calls(p):
 
 def p_function_call(p):
     ''' function_call : IDENTIFIER fucntion_call_body
-                        | ARRAY fucntion_call_body '''
+                        '''
     pass
 
 
 def p_function_call_body(p):
-    ''' fucntion_call_body : LPAREN nonempty_function_call_parameter_list RPAREN
+    ''' fucntion_call_body : LPAREN function_call_parameter_list RPAREN
                             | LPAREN empty RPAREN '''
 
 
 def p_function_call_variable(p):
-    '''function_call : variable_without_objects LPAREN nonempty_function_call_parameter_list RPAREN
+    '''function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN
                     | variable_without_objects LPAREN empty RPAREN '''
     pass
 
 
-# def p_method_or_not(p):
-#     '''method_or_not : LPAREN function_call_parameter_list RPAREN
-#                      | empty'''
-#     pass
-
-
-# def p_variable_properties(p):
-#     '''variable_properties : variable_properties variable_property
-#                            | empty'''
-#     pass
 
 
 def p_base_variable(p):
@@ -489,10 +475,6 @@ def p_array_pair_list(p):
     pass
 
 
-# def p_non_empty_array_pair_list_item(p):
-#     '''non_empty_array_pair_list : nonempty_function_call_parameter_list'''
-# #modified
-#     pass
  # TODO : uncomment and solve conflicts
 
 def p_non_empty_array_pair_list_pair(p):
@@ -510,20 +492,22 @@ def p_possible_comma(p):
     pass
 
 
-# def p_function_call_parameter_list(p):
-#     '''function_call_parameter_list : nonempty_function_call_parameter_list '''
-#     #modified
+def p_function_call_parameter_list(p):
+    '''function_call_parameter_list : function_call_parameter_list COMMA function_call_parameter
+                                    | function_call_parameter'''
+                                    
+
+def p_function_call_parameter_list_empty(p):
+    'function_call_parameter_list : empty'
+
+# def p_nonempty_function_call_parameter_list_empty(p):
+#     ''' nonempty_function_call_parameter_list : function_call_parameter multiple_func_call_param'''  
 #     pass
-# modified
 
-def p_nonempty_function_call_parameter_list_empty(p):
-    ''' nonempty_function_call_parameter_list : function_call_parameter multiple_func_call_param'''  
-    pass
-
-def p_multiple_func_cll_param(p):
-    ''' multiple_func_call_param : COMMA function_call_parameter multiple_func_call_param
-                                | COMMA function_call_parameter '''
-    pass
+# def p_multiple_func_cll_param(p):
+#     ''' multiple_func_call_param : COMMA function_call_parameter multiple_func_call_param
+#                                 | COMMA function_call_parameter '''
+#     pass
 
 # '''nonempty_function_call_parameter_list : nonempty_function_call_parameter_list COMMA function_call_parameter
 #                                 | function_call_parameter'''
@@ -597,6 +581,7 @@ def p_expr_binary_op(p):
             | expr GRATER_THAN_OR_EQUAL expr
             | expr INSTANCEOF expr
             | expr INSTANCEOF STATIC'''
+    print("reached")
     pass
 
 
@@ -810,6 +795,7 @@ def p_static_scalar(p):
                      | DOUBLE_QUOTE ENCAPSED_AND_WHITESPACE DOUBLE_QUOTE
                      | static_heredoc
                      | nowdoc'''
+    print("recahed2")
     pass
 
 
@@ -822,6 +808,7 @@ def p_static_heredoc(p):
 def p_multiple_encapsed(p):
     '''multiple_encapsed : multiple_encapsed ENCAPSED_AND_WHITESPACE
                          | empty'''
+    print("reached3")
     pass
 
 
@@ -921,6 +908,7 @@ def p_encaps_var_dollar_curly_expr(p):
 
 def p_encaps_list_string(p):
     'encaps_list : encaps_list ENCAPSED_AND_WHITESPACE'
+    print("reached4")
 
 def p_encaps_var_dollar_curly_array_offset(p):
     'encaps_var : DOLLAR_OPEN_CURLY_BRACES STRING_VARNAME LBRACKET expr RBRACKET RBRACE'
@@ -957,7 +945,7 @@ def p_empty(p):
 def p_error(t):
     # print(parser.state)
     if t:
-        raise SyntaxError('invalid syntax', (None, t.lineno, t.lexpos, t.value))
+        raise SyntaxError('invalid syntax', (t.value, t.lineno, t.value, t.value))
     else:
         raise SyntaxError('unexpected EOF while parsing',
                           (None, None, None, None))
