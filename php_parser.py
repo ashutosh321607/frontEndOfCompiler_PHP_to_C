@@ -342,10 +342,10 @@ def p_expr_assign(p):
     pass
 
 
-def p_ctor_arguments(p):
-    ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
-                      | empty'''
-    pass
+# def p_ctor_arguments(p):
+#     ''' ctor_arguments : LPAREN function_call_parameter_list RPAREN
+#                       | empty'''
+#     pass
 # understand this
 
 
@@ -735,7 +735,7 @@ def p_static_scalar(p):
 
 def p_static_heredoc(p):
     '''static_heredoc : START_HEREDOC multiple_encapsed END_HEREDOC
-                        | START_HEREDOC encaps_list END_HEREDOC'''
+                        '''
     pass
 
 
