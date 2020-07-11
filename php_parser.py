@@ -416,34 +416,35 @@ def p_function_call_variable(p):
 
 
 def p_base_variable(p):
-    'base_variable : simple_indirect_reference'
+    # 'base_variable : simple_indirect_reference'
+    'base_variable : compound_variable'
     pass
 
 
-def p_simple_indirect_reference(p):
-    '''simple_indirect_reference : DOLLAR simple_indirect_reference
-                                 | reference_variable'''
-    pass
+# def p_simple_indirect_reference(p):
+#     '''simple_indirect_reference : DOLLAR simple_indirect_reference
+#                                  | reference_variable'''
+#     pass
 
 
-def p_variable_array_offset(p):
-    'variable : variable LBRACKET dim_offset RBRACKET'
-    pass
+# def p_variable_array_offset(p):
+#     'variable : variable LBRACKET dim_offset RBRACKET'
+#     pass
 
 
-def p_reference_variable_array_offset(p):
-    'reference_variable : reference_variable LBRACKET dim_offset RBRACKET'
-    pass
+# def p_reference_variable_array_offset(p):
+#     'reference_variable : reference_variable LBRACKET dim_offset RBRACKET'
+#     pass
 
 
-def p_reference_variable_string_offset(p):
-    'reference_variable : reference_variable LBRACE expr RBRACE'
-    pass
+# def p_reference_variable_string_offset(p):
+#     'reference_variable : reference_variable LBRACE expr RBRACE'
+#     pass
 
 
-def p_reference_variable_compound_variable(p):
-    'reference_variable : compound_variable'
-    pass
+# def p_reference_variable_compound_variable(p):
+#     'reference_variable : compound_variable'
+#     pass
 
 
 def p_expr_string_offset(p):
@@ -464,7 +465,8 @@ def p_dim_offset(p):
 
 
 def p_variable_without_objects(p):
-    'variable_without_objects : simple_indirect_reference'
+    # 'variable_without_objects : simple_indirect_reference'
+    'variable_without_objects : compound_variable'
     pass
 
 
