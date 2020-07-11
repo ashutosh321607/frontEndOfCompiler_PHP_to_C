@@ -32,7 +32,8 @@ reserved=(
 )
 unparsed=(
     'WHITESPACE',
-    'COMMENT'
+    'COMMENT',
+    'OPEN_TAG', 'OPEN_TAG_WITH_ECHO', 'CLOSE_TAG'
 )
 
 tokens=reserved+unparsed+(
@@ -74,17 +75,18 @@ def t_ANY_newline(t):
     r'\n+'
     t.lexer.lineno+=len(t.value)
     
-def t_begin_php(t):
+def t_OPEN_TAG(t):
     r'<[?%](([Pp][Hh][Pp][ \t\r\n]?)|=)?' 
-    t.lexer.lineno+=t.value.count("\n")
+    if '=' in t.value: t.type = 'OPEN_TAG_WITH_ECHO'
+    t.lexer.lineno += t.value.count("\n")
     t.lexer.push_state('php')
+    return t
 
-
-def t_php_end(t):
+def t_php_CLOSE_TAG(t):
     r'[?%]>\r?\n?'
     t.lexer.lineno+=t.value.count("\n")
     t.lexer.pop_state()
-
+    return t
 
 def t_php_reserved_words(t):
         r'[a-zA-Z_][\w\d_]*'
@@ -694,6 +696,107 @@ def peek(lexer):
         return lexer.lexdata[lexer.lexpos]
     except IndexError:
         return ''
+
+
+
+class FilteredLexer(object):
+    def __init__(self, lexer):
+        self.lexer = lexer
+        self.last_token = None
+
+    @property
+    def lineno(self):
+        return self.lexer.lineno
+
+    @lineno.setter
+    def lineno(self, value):
+        self.lexer.lineno = value
+
+    @property
+    def lexpos(self):
+        return self.lexer.lexpos
+
+    @lexpos.setter
+    def lexpos(self, value):
+        self.lexer.lexpos = value
+
+    def clone(self):
+        return FilteredLexer(self.lexer.clone())
+
+    def current_state(self):
+        return self.lexer.current_state()
+
+    def input(self, input):
+        self.lexer.input(input)
+
+    def next_lexer_token(self):
+        """Return next lexer token.
+        Can be useful to customize parser behavior without need to touch
+        parser code in the token method."""
+        return self.lexer.token()
+
+    def token(self):
+        t = self.next_lexer_token()
+
+        # Filter out tokens that the parser is not expecting.
+        while t and t.type in unparsed:
+
+            # Skip over open tags, but keep track of when we see them.
+            if t.type == 'OPEN_TAG':
+                if self.last_token and self.last_token.type == 'SEMI_COLON':
+                    # Rewrite ?><?php as a semicolon.
+                    t.type = 'SEMI_COLON'
+                    t.value=(t.value,{'type':t.type})
+                    break
+                self.last_token = t
+                t = self.next_lexer_token()
+                continue
+
+            # Rewrite <?= to yield an "echo" statement.
+            if t.type == 'OPEN_TAG_WITH_ECHO':
+                t.type = 'ECHO'
+                break
+
+            # Insert semicolons in place of close tags where necessary.
+            if t.type == 'CLOSE_TAG':
+                if self.last_token and \
+                       self.last_token.type in ('OPEN_TAG', 'SEMI_COLON', 'COLON',
+                                                'LBRACE', 'RBRACE'):
+                    # Dont insert semicolons after these tokens.
+                    pass
+                else:
+                    # Rewrite close tag as a semicolon.
+                    t.type = 'SEMI_COLON'
+                    break
+
+            t = self.next_lexer_token()
+
+        self.last_token = t
+        return t
+
+    # Iterator interface
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        t = self.token()
+        if t is None:
+            raise StopIteration
+        return t
+
+    __next__ = next
+    
+full_lexer = lex.lex()
+full_lexer.symbol_table=SymbolTable()
+lexer = FilteredLexer(full_lexer)
+
+full_tokens = tokens
+tokens = [token for token in tokens if token not in unparsed]
+
+def run_on_argv1():
+    lex.runmain(full_lexer)
+
+
 
 
 
