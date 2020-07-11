@@ -135,12 +135,12 @@ function_call : namespace_name LPAREN function_call_parameter_list RPAREN
                      
 
 function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN
-function_call : BACKTICK encaps_list BACKTICK
+{% comment %} function_call : BACKTICK encaps_list BACKTICK {% endcomment %}
 
 method_or_not : LPAREN function_call_parameter_list RPAREN
                      | empty
-variable_properties : variable_properties variable_property
-                           | empty
+{% comment %} variable_properties : variable_properties variable_property
+                           | empty {% endcomment %}
 base_variable : simple_indirect_reference
 
 simple_indirect_reference : DOLLAR simple_indirect_reference
