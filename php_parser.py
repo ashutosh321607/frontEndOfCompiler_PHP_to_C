@@ -43,12 +43,14 @@ precedence = (
 
 def p_start(p):
     'start : top_statement_list'
+    print("correct")
     pass
 
 
 def p_top_statement_list(p):
     '''top_statement_list : top_statement_list top_statement
                           | empty'''
+    # print("top_statement_list",p[0],p[1])
     pass
 
 
@@ -154,17 +156,17 @@ def p_statement_static(p):
 
 def p_statement_echo(p):
     '''statement : ECHO echo_expr_list SEMI_COLON '''
-    pass
+    
 
 
 def p_statement_inline_html(p):
     ''' statement : INLINE_HTML'''
-    pass
+    
 
 
 def p_statement_expr(p):
     ''' statement : expr SEMI_COLON'''
-    pass
+    
 
 
 def p_statement_unset(p):
@@ -951,8 +953,9 @@ def p_empty(p):
 
 
 def p_error(t):
+    # print(parser.state)
     if t:
-        raise SyntaxError('invalid syntax', (None, t.lineno, None, t.value))
+        raise SyntaxError('invalid syntax', (None, t.lineno, t.lexpos, t.value))
     else:
         raise SyntaxError('unexpected EOF while parsing',
                           (None, None, None, None))
@@ -979,7 +982,7 @@ def main():
         make_parser(args.debug)
         return
 
-    parser = make_parser(args.debug)
+    parser = make_parser(True)
     if args.path is None:
         run_parser(parser, sys.stdin, args.quiet, args.debug)
     elif os.path.isfile(args.path):
@@ -1014,15 +1017,19 @@ def run_parser(parser, source, quiet, debug):
         print("Critical error in:", source.name)
         raise
 
-    if not quiet:
-        from pprint import pprint
-        for item in result:
-            if hasattr(item, 'generic'):
-                item = item.generic()
-            pprint(item)
+    # if not quiet:
+    #     from pprint import pprint
+    #     for item in result:
+    #         if hasattr(item, 'generic'):
+    #             item = item.generic()
+    #         pprint(item)
 
     parser.restart()
 
-
-# main()
-make_parser()
+# parser=yacc.yacc(debug=True)
+# with open('./variables.php') as f:
+#     lines=f.readlines()
+#     string="".join(lines)
+# parser.parse(string,lexer=php_lex.lexer)
+main()
+# make_parser()
