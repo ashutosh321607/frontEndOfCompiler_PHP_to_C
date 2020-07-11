@@ -30,15 +30,15 @@ precedence = (
     ('right', 'BOOLEAN_NOT'),
     ('nonassoc', 'INSTANCEOF'),
     ('right', 'NOT', 'INC', 'DEC', 'INT_CAST', 'DOUBLE_CAST', 'STRING_CAST',
-     'ARRAY_CAST', 'OBJECT_CAST', 'BOOL_CAST', 'UNSET_CAST', 'AT'),
+     'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'AT'),
     ('right', 'LBRACKET'),
-    ('nonassoc', 'NEW', 'CLONE'),
+    ('nonassoc',  'CLONE'),
     # ('left', 'ELSEIF'),
     # ('left', 'ELSE'),
     ('left', 'ENDIF'),
-    ('right', 'STATIC', 'ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'),
+    ('right', 'STATIC'),
 )
-
+#, 'OBJECT_CAST','NEW','ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'
 
 def p_start(p):
     'start : top_statement_list'
@@ -395,10 +395,10 @@ def p_function_call_variable(p):
     pass
 
 
-def p_method_or_not(p):
-    '''method_or_not : LPAREN function_call_parameter_list RPAREN
-                     | empty'''
-    pass
+# def p_method_or_not(p):
+#     '''method_or_not : LPAREN function_call_parameter_list RPAREN
+#                      | empty'''
+#     pass
 
 
 # def p_variable_properties(p):
@@ -525,7 +525,7 @@ def p_lexical_vars(p):
     '''lexical_vars : USE LPAREN lexical_var_list RPAREN
                     | empty'''
     pass
-
+#doubt is the above rule required
 
 def p_lexical_var_list(p):
     '''lexical_var_list : lexical_var_list COMMA AND VARIABLE
