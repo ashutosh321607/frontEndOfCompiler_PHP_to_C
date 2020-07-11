@@ -3,6 +3,8 @@ import re
 from symbol_table import SymbolTable
 
 input_string = " "
+
+
 def col_no(pos, val):
     last_new_line_pos = input_string.rfind("\n", 0, pos)
     final_pos = pos-len(val)-last_new_line_pos
@@ -22,16 +24,16 @@ states = (
 )
 
 reserved = (
-    'ARRAY',  'BREAK', 'CASE',  'CONST', 'CONTINUE', 
-    'DEFAULT', 'DIE', 'DO', 'ECHO', 'ELSE', 'ELSEIF', 'EMPTY', 
+    'ARRAY',  'BREAK', 'CASE',  'CONST', 'CONTINUE',
+    'DEFAULT', 'DIE', 'DO', 'ECHO', 'ELSE', 'ELSEIF', 'EMPTY',
     'ENDFOR',  'ENDIF', 'ENDSWITCH', 'ENDWHILE', 'EVAL', 'EXIT',
-     'FOR',  'FUNCTION', 'GLOBAL', 'IF', 'INCLUDE',
+    'FOR',  'FUNCTION', 'GLOBAL', 'IF', 'INCLUDE',
     'INCLUDE_ONCE', 'INSTANCEOF', 'ISSET', 'LIST',  'PRINT', 'REQUIRE',
-    'REQUIRE_ONCE', 'RETURN', 'STATIC', 'SWITCH', 'UNSET', 'USE', 
+    'REQUIRE_ONCE', 'RETURN', 'STATIC', 'SWITCH', 'UNSET', 'USE',
     'WHILE',  'CLONE',  'YIELD'
-    
+
     #'ABSTRACT','AS','ENDFOREACH','FOREACH','TRY', 'CATCH', 'THROW', 'NAMESPACE','FINALLY', 'TRAIT','CLASS','PUBLIC', 'PRIVATE','PROTECTED','INTERFACE', 'IMPLEMENTS','FINAL','DECLARE','ENDDECLARE','EXTENDS','VAR','NEW',
-    
+
 )
 unparsed = (
     'WHITESPACE',
@@ -44,7 +46,7 @@ tokens = reserved+unparsed+(
 
     'PLUS', 'MINUS', 'MUL', 'DIV', 'MOD', 'AND', 'OR', 'NOT', 'XOR', 'SL',
     'SR', 'BOOLEAN_AND', 'BOOLEAN_OR', 'BOOLEAN_NOT', 'LESS_THAN', 'GREATER_THAN', 'LESS_THAN_OR_EQUAL', 'GRATER_THAN_OR_EQUAL', 'IS_EQUAL_TO', 'IS_NOT_EQUAL', 'IS_IDENTICAL',
-    'IS_NOT_IDENTICAL', 
+    'IS_NOT_IDENTICAL',
 
     'EQUALS', 'MUL_EQUAL', 'DIV_EQUAL', 'MOD_EQUAL', 'PLUS_EQUAL', 'MINUS_EQUAL',
     'SL_EQUAL', 'SR_EQUAL', 'AND_EQUAL', 'OR_EQUAL', 'XOR_EQUAL', 'CONCAT_EQUAL',
@@ -53,20 +55,20 @@ tokens = reserved+unparsed+(
     "DOUBLE_ARROW",
 
     'LPAREN', 'RPAREN', 'LBRACKET', 'RBRACKET', 'LBRACE', 'RBRACE', 'DOLLAR',
-    'COMMA', 'CONCAT', 'QUESTION', 'COLON', 'SEMI_COLON', 'AT', 
+    'COMMA', 'CONCAT', 'QUESTION', 'COLON', 'SEMI_COLON', 'AT',
 
     'INLINE_HTML',
 
     'DIR', 'FILE', 'LINE', 'METHOD_C',  'LOGICAL_AND', 'LOGICAL_OR', 'LOGICAL_XOR',
-     'VARIABLE', 'INT_NUMBER', 'FLOAT_NUMBER',  'DOUBLE_QUOTE', 'IDENTIFIER',
-     'NUM_STRING', 'FUNC_C', 'HALT_COMPILER', 'CONSTANT_ENCAPSED_STRING',
+    'VARIABLE', 'INT_NUMBER', 'FLOAT_NUMBER',  'DOUBLE_QUOTE', 'IDENTIFIER',
+    'NUM_STRING', 'FUNC_C', 'HALT_COMPILER', 'CONSTANT_ENCAPSED_STRING',
 
-    'ARRAY_CAST', 'BINARY_CAST', 'BOOL_CAST', 'DOUBLE_CAST', 'INT_CAST', 
+    'ARRAY_CAST', 'BINARY_CAST', 'BOOL_CAST', 'DOUBLE_CAST', 'INT_CAST',
     'STRING_CAST', 'UNSET_CAST', 'ENCAPSED_AND_WHITESPACE', 'STRING_VARNAME', 'START_HEREDOC', 'END_HEREDOC',
     'CURLY_OPEN', 'DOLLAR_OPEN_CURLY_BRACES', 'START_NOWDOC', 'END_NOWDOC',
 
- #'STRING','SINGLE_QUOTE','OBJECT_CAST', 'CLASS_C','NS_SEPARATOR','NS_C',
- # 'SPACESHIP','UNQUOTED_STRING','NULL_COALESCING',(implment if time is available)
+    #'STRING','SINGLE_QUOTE','OBJECT_CAST', 'CLASS_C','NS_SEPARATOR','NS_C',
+    # 'SPACESHIP','UNQUOTED_STRING','NULL_COALESCING',(implment if time is available)
 
 )
 
@@ -420,55 +422,66 @@ def t_php_DOUBLE_ARROW(t):
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_BOOLEAN_AND(t):
     r'&&'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_BOOLEAN_OR(t):
     r'\|\|'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_BOOLEAN_NOT(t):
     r'!'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_LESS_THAN_OR_EQUAL(t):
     r'<='
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_GREATER_THAN_OR_EQUAL(t):
     r'>='
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_LESS_THAN(t):
     r'<'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_GREATER_THAN(t):
     r'>'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_IS_EQUAL_TO(t):
     r'=='
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_IS_NOT_EQUAL(t):
     r'(!=(?!=))|(<>)'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_IS_IDENTICAL(t):
     r'==='
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_IS_NOT_IDENTICAL(t):
     r'!=='
@@ -553,55 +566,66 @@ def t_HERE_NOW_DOC(t):
     t.value = (t.value, {'type': type})
     return t
 
+
 def t_php_PLUS(t):
     r'\+'
     t.value = (t.value, {'type': t.type})
     return t
 
-def t_php_MINUS (t):
+
+def t_php_MINUS(t):
     r'-'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_MU(t):
     r'\*'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_DIV(t):
     r'/'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_MOD(t):
     r'%'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_AND(t):
     r'&'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_OR(t):
     r'\|'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_NOT(t):
     r'~'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_XOR(t):
     r'\^'
     t.value = (t.value, {'type': t.type})
     return t
 
+
 def t_php_SL(t):
     r'<<'
     t.value = (t.value, {'type': t.type})
     return t
+
 
 def t_php_SR(t):
     r'>>'
@@ -676,7 +700,7 @@ def t_php_ARRAY_CAST(t):
 
 
 def t_php_BINARY_CAST(t):
-    r'\([\t]*[Bb][Ii][Nn][Aa][Rr][Yy][\t]*\)'
+    r'\([ \t]*[Bb][Ii][Nn][Aa][Rr][Yy][ \t]*\)'
     t.value = (t.value, {'type': t.type})
     return t
 
@@ -791,7 +815,7 @@ class FilteredLexer(object):
     def input(self, input):
         self.lexer.input(input)
         input_string = input
-        
+
     def next_lexer_token(self):
         """Return next lexer token.
         Can be useful to customize parser behavior without need to touch

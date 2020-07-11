@@ -30,7 +30,7 @@ precedence = (
     ('right', 'BOOLEAN_NOT'),
     ('nonassoc', 'INSTANCEOF'),
     ('right', 'NOT', 'INC', 'DEC', 'INT_CAST', 'DOUBLE_CAST', 'STRING_CAST',
-     'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'BINARY_CAST','AT'),
+     'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'BINARY_CAST', 'AT'),
     ('right', 'LBRACKET'),
     ('nonassoc',  'CLONE'),
     # ('left', 'ELSEIF'),
@@ -38,7 +38,8 @@ precedence = (
     ('left', 'ENDIF'),
     ('right', 'STATIC'),
 )
-#, 'OBJECT_CAST','NEW','ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'
+# , 'OBJECT_CAST','NEW','ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'
+
 
 def p_start(p):
     'start : top_statement_list'
@@ -389,9 +390,12 @@ def p_function_call(p):
     ''' function_call : IDENTIFIER fucntion_call_body
                         | ARRAY fucntion_call_body '''
     pass
+
+
 def p_function_call_body(p):
     ''' fucntion_call_body : LPAREN nonempty_function_call_parameter_list RPAREN
                             | LPAREN empty RPAREN '''
+
 
 def p_function_call_variable(p):
     '''function_call : variable_without_objects LPAREN nonempty_function_call_parameter_list RPAREN
@@ -506,7 +510,7 @@ def p_possible_comma(p):
 #     '''function_call_parameter_list : nonempty_function_call_parameter_list '''
 #     #modified
 #     pass
-#modified
+# modified
 
 def p_nonempty_function_call_parameter_list_empty(p):
     ''' nonempty_function_call_parameter_list : function_call_parameter multiple_func_call_param'''  
@@ -536,7 +540,8 @@ def p_lexical_vars(p):
     '''lexical_vars : USE LPAREN lexical_var_list RPAREN
                     | empty'''
     pass
-#doubt is the above rule required
+# doubt is the above rule required
+
 
 def p_lexical_var_list(p):
     '''lexical_var_list : lexical_var_list COMMA AND VARIABLE
@@ -627,32 +632,41 @@ def p_expr_cast_int(p):
     'expr : INT_CAST expr'
     pass
 
-#add here
+# add here
+
+
 def p_expr_cast_array(p):
     'expr : ARRAY_CAST expr'
     pass
 
+
 def p_expr_cast_string(p):
     'expr : STRING_CAST expr'
-    
+
+
 def p_expr_cast_double(p):
     'expr : DOUBLE_CAST expr'
+
 
 def p_expr_cast_bool(p):
     'expr : BOOL_CAST expr'
     pass
 
+
 def p_expr_cast_unset(p):
     'expr : UNSET_CAST expr'
     pass
+
 
 def p_expr_cast_binary(p):
     'expr : BINARY_CAST expr'
     pass
 
+
 def p_expr_isset(p):
     'expr : ISSET LPAREN isset_variables RPAREN'
     pass
+
 
 def p_isset_variables(p):
     '''isset_variables : isset_variables COMMA variable
@@ -760,28 +774,30 @@ def p_common_scalar_string(p):
     pass
 
 
-#add here
+# add here
 def p_common_scalar_magic_func(p):
     'common_scalar : FUNC_C'
     pass
+
 
 def p_common_scalar_magic_method(p):
     'common_scalar : METHOD_C'
     pass
 
+
 def p_common_scalar_magic_line(p):
     'common_scalar : LINE'
     pass
+
 
 def p_common_scalar_magic_file(p):
     'common_scalar : FILE'
     pass
 
+
 def p_common_scalar_magic_dir(p):
     'common_scalar : DIR'
     pass
-
-
 
 
 def p_static_scalar(p):
@@ -791,7 +807,6 @@ def p_static_scalar(p):
                      | static_heredoc
                      | nowdoc'''
     pass
-
 
 
 def p_static_heredoc(p):
@@ -807,7 +822,7 @@ def p_multiple_encapsed(p):
 
 
 def p_static_scalar_namespace_name(p):
-    '''static_scalar : IDENTIFIER''' # modified from namespace to identifier
+    '''static_scalar : IDENTIFIER'''  # modified from namespace to identifier
     pass
 
 
@@ -931,15 +946,21 @@ def p_empty(p):
     pass
 
 # Error rule for syntax errors
+
+
 def p_error(t):
     if t:
         raise SyntaxError('invalid syntax', (None, t.lineno, None, t.value))
     else:
-        raise SyntaxError('unexpected EOF while parsing', (None, None, None, None))
+        raise SyntaxError('unexpected EOF while parsing',
+                          (None, None, None, None))
 
 # Build the grammar
+
+
 def make_parser(debug=True):
     return yacc.yacc(debug=debug)
+
 
 def main():
     import argparse
@@ -973,6 +994,7 @@ def main():
                     with open(os.path.join(root, fpath), 'r') as f:
                         run_parser(parser, f, args.quiet, args.debug)
 
+
 def run_parser(parser, source, quiet, debug):
     s = source.read()
     lexer = php_lex.lexer
@@ -999,4 +1021,6 @@ def run_parser(parser, source, quiet, debug):
 
     parser.restart()
 
-make_parser(True)
+
+# main()
+make_parser()
