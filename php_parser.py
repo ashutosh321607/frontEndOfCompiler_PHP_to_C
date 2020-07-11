@@ -514,6 +514,7 @@ def p_possible_comma(p):
 def p_nonempty_function_call_parameter_list_empty(p):
     '''nonempty_function_call_parameter_list : nonempty_function_call_parameter_list COMMA function_call_parameter
                                     | function_call_parameter'''
+    pass
 # added
 
 
