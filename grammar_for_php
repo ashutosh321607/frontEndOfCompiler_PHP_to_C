@@ -118,8 +118,8 @@ parameter : VARIABLE
 expr : variable
 expr : variable EQUALS expr
             | variable EQUALS AND expr
-ctor_arguments : LPAREN function_call_parameter_list RPAREN
-                      | empty
+{% comment %} ctor_arguments : LPAREN function_call_parameter_list RPAREN
+                      | empty {% endcomment %}
 
 expr : CLONE expr
 expr : LIST LPAREN assignment_list RPAREN EQUALS expr
