@@ -872,3 +872,72 @@ def p_encaps_var_offset_variable(p):
 def p_empty(p):
     'empty : '
     pass
+
+# Error rule for syntax errors
+def p_error(t):
+    if t:
+        raise SyntaxError('invalid syntax', (None, t.lineno, None, t.value))
+    else:
+        raise SyntaxError('unexpected EOF while parsing', (None, None, None, None))
+
+# Build the grammar
+def make_parser(debug=True):
+    return yacc.yacc(debug=debug)
+
+def main():
+    import argparse
+    import os
+    ap = argparse.ArgumentParser(description="Parser test tool")
+    ap.add_argument('-g', '--generate', dest='generate', action='store_true')
+    ap.add_argument('-r', '--recursive', dest='recursive', action='store_true')
+    ap.add_argument('-q', '--quiet', dest='quiet', action='store_true')
+    ap.add_argument('-d', '--debug', dest='debug', action='store_true')
+    ap.add_argument('path', metavar='PATH', nargs='?', type=str)
+    args = ap.parse_args()
+
+    if args.generate:
+        make_parser(args.debug)
+        return
+
+    parser = make_parser(args.debug)
+    if args.path is None:
+        run_parser(parser, sys.stdin, args.quiet, args.debug)
+    elif os.path.isfile(args.path):
+        with open(args.path, 'r') as f:
+            run_parser(parser, f, args.quiet, args.debug)
+    elif os.path.isdir(args.path):
+        if not args.recursive:
+            print('directory path given, use -r for recursive processing')
+        else:
+            for root, dirs, files in os.walk(args.path):
+                for fpath in files:
+                    if not fpath.endswith('.php'):
+                        continue
+                    with open(os.path.join(root, fpath), 'r') as f:
+                        run_parser(parser, f, args.quiet, args.debug)
+
+def run_parser(parser, source, quiet, debug):
+    s = source.read()
+    lexer = php_lex.lexer
+    lexer.lineno = 1
+
+    try:
+        result = parser.parse(s, lexer=lexer.clone(), debug=debug)
+    except SyntaxError as e:
+        if e.lineno is not None:
+            print(source.name, e, 'near', repr(e.text))
+        else:
+            print(source.name, e)
+        sys.exit(1)
+    except:
+        print("Critical error in:", source.name)
+        raise
+
+    if not quiet:
+        from pprint import pprint
+        for item in result:
+            if hasattr(item, 'generic'):
+                item = item.generic()
+            pprint(item)
+
+    parser.restart()
