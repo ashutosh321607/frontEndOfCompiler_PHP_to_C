@@ -919,6 +919,8 @@ def p_encaps_var_dollar_curly_expr(p):
     'encaps_var : DOLLAR_OPEN_CURLY_BRACES expr RBRACE'
     pass
 
+def p_encaps_list_string(p):
+    'encaps_list : encaps_list ENCAPSED_AND_WHITESPACE'
 
 def p_encaps_var_dollar_curly_array_offset(p):
     'encaps_var : DOLLAR_OPEN_CURLY_BRACES STRING_VARNAME LBRACKET expr RBRACKET RBRACE'
