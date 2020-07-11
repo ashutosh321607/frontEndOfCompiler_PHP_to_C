@@ -30,7 +30,7 @@ precedence = (
     ('right', 'BOOLEAN_NOT'),
     ('nonassoc', 'INSTANCEOF'),
     ('right', 'NOT', 'INC', 'DEC', 'INT_CAST', 'DOUBLE_CAST', 'STRING_CAST',
-     'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'AT'),
+     'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'BINARY_CAST','AT'),
     ('right', 'LBRACKET'),
     ('nonassoc',  'CLONE'),
     # ('left', 'ELSEIF'),
@@ -481,11 +481,11 @@ def p_array_pair_list(p):
     pass
 
 
-def p_non_empty_array_pair_list_item(p):
-    '''non_empty_array_pair_list : nonempty_function_call_parameter_list'''
-#modified
-    pass
-
+# def p_non_empty_array_pair_list_item(p):
+#     '''non_empty_array_pair_list : nonempty_function_call_parameter_list'''
+# #modified
+#     pass
+ # TODO : uncomment and solve conflicts
 
 def p_non_empty_array_pair_list_pair(p):
     '''non_empty_array_pair_list : non_empty_array_pair_list COMMA expr DOUBLE_ARROW AND variable
@@ -493,6 +493,7 @@ def p_non_empty_array_pair_list_pair(p):
                                  | expr DOUBLE_ARROW AND variable
                                  | expr DOUBLE_ARROW expr'''
     pass
+
 
 
 def p_possible_comma(p):
@@ -508,8 +509,16 @@ def p_possible_comma(p):
 #modified
 
 def p_nonempty_function_call_parameter_list_empty(p):
-    '''nonempty_function_call_parameter_list : nonempty_function_call_parameter_list COMMA function_call_parameter
-                                    | function_call_parameter'''
+    ''' nonempty_function_call_parameter_list : function_call_parameter multiple_func_call_param'''  
+    pass
+
+def p_multiple_func_cll_param(p):
+    ''' multiple_func_call_param : COMMA function_call_parameter multiple_func_call_param
+                                | COMMA function_call_parameter '''
+    pass
+
+# '''nonempty_function_call_parameter_list : nonempty_function_call_parameter_list COMMA function_call_parameter
+#                                 | function_call_parameter'''
 #added
 
 def p_function_call_parameter(p):
@@ -989,3 +998,5 @@ def run_parser(parser, source, quiet, debug):
             pprint(item)
 
     parser.restart()
+
+make_parser(True)
