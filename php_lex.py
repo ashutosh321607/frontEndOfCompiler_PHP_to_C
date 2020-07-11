@@ -579,7 +579,7 @@ def t_php_MINUS(t):
     return t
 
 
-def t_php_MU(t):
+def t_php_MUL(t):
     r'\*'
     t.value = (t.value, {'type': t.type})
     return t
