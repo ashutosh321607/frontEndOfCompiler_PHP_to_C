@@ -2,9 +2,9 @@ import ply.lex as lex
 import re
 from symbol_table import SymbolTable
 
-
+input_string = " "
 def col_no(pos, val):
-    last_new_line_pos = string.rfind("\n", 0, pos)
+    last_new_line_pos = input_string.rfind("\n", 0, pos)
     final_pos = pos-len(val)-last_new_line_pos
     return final_pos
 
@@ -856,7 +856,8 @@ class FilteredLexer(object):
 
     def input(self, input):
         self.lexer.input(input)
-
+        input_string = input
+        
     def next_lexer_token(self):
         """Return next lexer token.
         Can be useful to customize parser behavior without need to touch
