@@ -1,14 +1,12 @@
 <?php 
-
-$x=0;
-$y=5;
-$z=$x+$y;
-
-$a=<<<EOT
-asdfg@@@asd ${x} {$y} ghjkghjkbhj hjkyhujyu
-EOT;
-
-$x=$y[$z+$y];
-
-$var="hello"
+$x = 1;
+if($x)
+{
+    echo "hello";
+}
+while($x <= 5){
+    echo "hello is: $x <br>";
+    $x++;
+}
+func();
 ?>
