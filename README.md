@@ -21,14 +21,10 @@
     ```
 
 
-
-### To execute the lexical analyzer run the following command:
- - python3 php_lex.py<br>
- **Note: please paste the php code on which you want to perform lexical analysis in test_files/variables.php**
-
-
 ### To execute the parser run the following command:
- - python3 php_parser.py ./test_files/filename.php<br>
+    ```sh 
+    python3 php_parser.py ./test_files/filename.php
+    ```
  - **Note: The filename.php file contains the php code which you want to check. This file lies in the ./test_files folder**<br>
  - **There are several test php files in the ./test_files folder which you can use inplace of filename.php (eg.: do-whle.php, for.php, etc.)**
  - **Example: $ python3 php_parser.py ./test_files/if.php**
