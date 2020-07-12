@@ -25,3 +25,9 @@
 ### To execute the lexical analyzer run the following command:
  - python3 php_lex.py<br>
  **Note: please paste the php code on which you want to perform lexical analysis in test_files/variables.php**
+
+
+### To execute the parser run the following command:
+ - python3 php_parser.py filename.php
+ **Note: The filename.php file contains the php code which you want to check**
+ **There are several test php files in the directory containing php_parser.py which you can use inplace of filename.php (eg.: do-whle.php, for.php, etc.)**
