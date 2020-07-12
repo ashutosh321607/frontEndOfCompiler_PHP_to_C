@@ -31,9 +31,6 @@ reserved = (
     'INCLUDE_ONCE', 'INSTANCEOF', 'ISSET', 'LIST',  'PRINT', 'REQUIRE',
     'REQUIRE_ONCE', 'RETURN', 'STATIC', 'SWITCH', 'UNSET', 'USE',
     'WHILE',  'CLONE',  'YIELD'
-
-    #'ABSTRACT','AS','ENDFOREACH','FOREACH','TRY', 'CATCH', 'THROW', 'NAMESPACE','FINALLY', 'TRAIT','CLASS','PUBLIC', 'PRIVATE','PROTECTED','INTERFACE', 'IMPLEMENTS','FINAL','DECLARE','ENDDECLARE','EXTENDS','VAR','NEW',
-
 )
 unparsed = (
     'WHITESPACE',
@@ -128,7 +125,6 @@ def t_php_VARIABLE(t):
 
 
 t_php_ignore_WHITESAPCE = r'\s'
-# t_php_ignore_COMMENT = r"(?:\#|//)[^\r\n]*|/\*[\s\S]*?\*/"
 
 def t_php_COMMENT(t):
     r'/\*(.|\n)*?\*/ | //([^?%\n]|[?%](?!>))*\n? | \#([^?%\n]|[?%](?!>))*\n?'
@@ -171,27 +167,6 @@ def t_php_CONSTANT_ENCAPSED_STRING(t):
     t.value = (t.value, t.lexer.symbol_table.lookup(t.value))
     return t
 
-# def t_php_SINGLE_QUOTE(t):
-#     r'\''
-#     t.lexer.push_state('singleQuoted')
-#     t.value=(t.value,{'type':t.type})
-#     return t
-
-# def t_singleQuoted_STRING(t):
-#     r"[^']+|((?<=\\)')+"
-#     if(t.lexer.symbol_table.insert(t.value)!=None):
-#         t.lexer.symbol_table.set_attribute(t.value,'type',t.type)
-#         t.lexer.symbol_table.set_attribute(t.value,'line_no',t.lexer.lineno)
-#         t.lexer.symbol_table.set_attribute(t.value,'col',col_no(t.lexer.lexpos,t.value))
-#     t.value=(t.value,t.lexer.symbol_table.lookup(t.value))
-#     return t
-
-# def t_singleQuoted_SINGLE_QUOTE(t):
-#     r"(?<!\\)'"
-#     t.lexer.pop_state()
-#     t.value=(t.value,{'type':t.type})
-#     return t
-
 
 def t_php_DOUBLE_QUOTE(t):
     r'"'
@@ -199,19 +174,6 @@ def t_php_DOUBLE_QUOTE(t):
     t.value = (t.value, {'type': t.type ,'line_no':t.lexer.lineno ,'col': col_no(t.lexer.lexpos, t.value)})
 
     return t
-
-
-# def t_doubleQuoted_STRING(t):
-#     r'[^$"]+|((?<=\\)")+|((?<=\\)$)+'
-
-#     if(t.lexer.symbol_table.insert(t.value) != None):
-#         t.lexer.symbol_table.set_attribute(t.value, 'type', t.type)
-#         t.lexer.symbol_table.set_attribute(t.value, 'line_no', t.lexer.lineno)
-#         t.lexer.symbol_table.set_attribute(
-#             t.value, 'col', col_no(t.lexer.lexpos, t.value))
-#     t.value = (t.value, t.lexer.symbol_table.lookup(t.value))
-
-#     return t
 
 
 def t_doubleQuoted_VARIABLE(t):

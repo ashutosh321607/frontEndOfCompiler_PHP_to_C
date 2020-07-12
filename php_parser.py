@@ -40,19 +40,18 @@ precedence = (
     ('left', 'ENDIF'),
     ('right', 'STATIC'),
 )
-# , 'OBJECT_CAST','NEW','ABSTRACT', 'FINAL', 'PRIVATE', 'PROTECTED', 'PUBLIC'
+
 
 
 def p_start(p):
     'start : top_statement_list'
-    print("correct")
+    print("The PHP code is syntactically correct")
     pass
 
 
 def p_top_statement_list(p):
     '''top_statement_list : top_statement_list top_statement
                           | empty'''
-    # print("top_statement_list",p[0],p[1])
     pass
 
 
@@ -72,7 +71,6 @@ def p_constant_declartions(p):
 
 def p_constant_declaration(p):
     '''constant_declaration : IDENTIFIER EQUALS static_expr'''
-    # todo: add grammar rules for static_expr
     pass
 
 
@@ -85,7 +83,6 @@ def p_inner_statment_list(p):
 def p_inner_statment(p):
     ''' inner_statement : statement
                        | function_declaration_statement'''
-    # less important
     pass
 
 
@@ -104,9 +101,8 @@ def p_statement_if(p):
     '''statement : IF LPAREN expr RPAREN statement elseif_list     %prec LOWER_THAN_ELSE
                  |  IF LPAREN expr RPAREN statement elseif_list ELSE statement  
                  | IF LPAREN expr RPAREN COLON inner_statement_list new_elseif_list new_else_single ENDIF SEMI_COLON '''
-    print("reached if")
-# why not inner_statement_list in first rule instead of statement
-# my observation: for new type of writing if else(colon form) it is inner_statement_list and for old method it is statment
+    # print("reached if")
+
     pass
 
 
@@ -189,12 +185,6 @@ def p_elif_list(p):
     pass
 
 
-# def p_else_single(p):
-#     '''else_single : 
-#                    | ELSE statement '''
-#     pass
-
-
 def p_new_elseif_list(p):
     ''' new_elseif_list : empty
                        | new_elseif_list ELSEIF LPAREN expr RPAREN COLON inner_statement_list'''
@@ -234,7 +224,7 @@ def p_for_statement(p):
 def p_switch_case_list(p):
     '''switch_case_list : LBRACE case_list RBRACE
                         | LBRACE SEMI_COLON case_list RBRACE '''
-# explore the above rule
+
     pass
 
 
@@ -349,8 +339,6 @@ def p_expr_assign(p):
     pass
 
 
-
-
 # *************
 
 def p_expr_clone(p):
@@ -407,35 +395,10 @@ def p_function_call_variable(p):
 
 
 def p_base_variable(p):
-    # 'base_variable : simple_indirect_reference'
     'base_variable : compound_variable'
     pass
 
 
-# def p_simple_indirect_reference(p):
-#     '''simple_indirect_reference : DOLLAR simple_indirect_reference
-#                                  | reference_variable'''
-#     pass
-
-
-# def p_variable_array_offset(p):
-#     'variable : variable LBRACKET dim_offset RBRACKET'
-#     pass
-
-
-# def p_reference_variable_array_offset(p):
-#     'reference_variable : reference_variable LBRACKET dim_offset RBRACKET'
-#     pass
-
-
-# def p_reference_variable_string_offset(p):
-#     'reference_variable : reference_variable LBRACE expr RBRACE'
-#     pass
-
-
-# def p_reference_variable_compound_variable(p):
-#     'reference_variable : compound_variable'
-#     pass
 
 
 def p_expr_string_offset(p):
@@ -456,7 +419,7 @@ def p_dim_offset(p):
 
 
 def p_variable_without_objects(p):
-    # 'variable_without_objects : simple_indirect_reference'
+    
     'variable_without_objects : compound_variable'
     pass
 
@@ -478,7 +441,7 @@ def p_array_pair_list(p):
     pass
 
 
- # TODO : uncomment and solve conflicts
+
 
 def p_non_empty_array_pair_list_pair(p):
     '''non_empty_array_pair_list : non_empty_array_pair_list COMMA expr DOUBLE_ARROW AND variable
@@ -503,18 +466,6 @@ def p_function_call_parameter_list(p):
 def p_function_call_parameter_list_empty(p):
     'function_call_parameter_list : empty'
 
-# def p_nonempty_function_call_parameter_list_empty(p):
-#     ''' nonempty_function_call_parameter_list : function_call_parameter multiple_func_call_param'''  
-#     pass
-
-# def p_multiple_func_cll_param(p):
-#     ''' multiple_func_call_param : COMMA function_call_parameter multiple_func_call_param
-#                                 | COMMA function_call_parameter '''
-#     pass
-
-# '''nonempty_function_call_parameter_list : nonempty_function_call_parameter_list COMMA function_call_parameter
-#                                 | function_call_parameter'''
-#added
 
 def p_function_call_parameter(p):
     '''function_call_parameter : expr
@@ -585,7 +536,7 @@ def p_expr_binary_op(p):
             | expr INSTANCEOF expr
             | expr SPACESHIP expr
             | expr INSTANCEOF STATIC'''
-    print("reached")
+    # print("reached")
     pass
 
 
@@ -814,12 +765,12 @@ def p_static_heredoc(p):
 def p_multiple_encapsed(p):
     '''multiple_encapsed : multiple_encapsed ENCAPSED_AND_WHITESPACE
                          | empty'''
-    print("reached3")
+    # print("reached3")
     pass
 
 
-def p_static_scalar_namespace_name(p):
-    '''static_scalar : IDENTIFIER'''  # modified from namespace to identifier
+def p_static_scalar_identifier(p):
+    '''static_scalar : IDENTIFIER'''  
     pass
 
 
@@ -887,11 +838,6 @@ def p_static_expr_group(p):
     pass
 
 
-# def p_namespace_name(p):
-#     '''namespace_name : IDENTIFIER'''
-#     pass
-
-
 def p_encaps_list(p):
     '''encaps_list : encaps_list encaps_var
                    | empty'''
@@ -914,7 +860,7 @@ def p_encaps_var_dollar_curly_expr(p):
 
 def p_encaps_list_string(p):
     'encaps_list : encaps_list ENCAPSED_AND_WHITESPACE'
-    print("reached4")
+    # print("reached4")
 
 def p_encaps_var_dollar_curly_array_offset(p):
     'encaps_var : DOLLAR_OPEN_CURLY_BRACES STRING_VARNAME LBRACKET expr RBRACKET RBRACE'
@@ -951,7 +897,7 @@ def p_empty(p):
 def p_error(t):
     # print(parser.state)
     if t:
-        raise SyntaxError('invalid syntax', (t.value, t.lineno, t.value, t.value))
+        raise SyntaxError('invalid syntax', (None, t.lineno, None, t.value[1]['col']))
     else:
         raise SyntaxError('unexpected EOF while parsing',
                           (None, None, None, None))
@@ -1013,19 +959,8 @@ def run_parser(parser, source, quiet, debug):
         print("Critical error in:", source.name)
         raise
 
-    # if not quiet:
-    #     from pprint import pprint
-    #     for item in result:
-    #         if hasattr(item, 'generic'):
-    #             item = item.generic()
-    #         pprint(item)
-
     parser.restart()
 
-# parser=yacc.yacc(debug=True)
-# with open('./variables.php') as f:
-#     lines=f.readlines()
-#     string="".join(lines)
-# parser.parse(string,lexer=php_lex.lexer)
+
 main()
-# make_parser()
+
