@@ -23,7 +23,7 @@ precedence = (
     ('left', 'AND'),
     ('nonassoc', 'IS_EQUAL_TO', 'IS_NOT_EQUAL', 'IS_IDENTICAL', 'IS_NOT_IDENTICAL'),
     ('nonassoc', 'LESS_THAN', 'LESS_THAN_OR_EQUAL',
-     'GREATER_THAN', 'GRATER_THAN_OR_EQUAL'),
+     'GREATER_THAN', 'GRATER_THAN_OR_EQUAL', 'SPACESHIP'),
     ('left', 'SL', 'SR'),
     ('left', 'PLUS', 'MINUS', 'CONCAT'),
     ('left', 'MUL', 'DIV', 'MOD'),
@@ -35,6 +35,8 @@ precedence = (
     ('nonassoc',  'CLONE'),
     # ('left', 'ELSEIF'),
     # ('left', 'ELSE'),
+    ('nonassoc', 'LOWER_THAN_ELSE', 'LOWER_THAN_ELSEIF'),
+    ('nonassoc', 'ELSE', 'ELSEIF'),
     ('left', 'ENDIF'),
     ('right', 'STATIC'),
 )
@@ -99,7 +101,8 @@ def p_statement_block(p):
 
 
 def p_statement_if(p):
-    '''statement : IF LPAREN expr RPAREN statement elseif_list else_single   
+    '''statement : IF LPAREN expr RPAREN statement elseif_list     %prec LOWER_THAN_ELSE
+                 |  IF LPAREN expr RPAREN statement elseif_list ELSE statement  
                  | IF LPAREN expr RPAREN COLON inner_statement_list new_elseif_list new_else_single ENDIF SEMI_COLON '''
     print("reached if")
 # why not inner_statement_list in first rule instead of statement
@@ -181,15 +184,15 @@ def p_statement_empty_stmt(p):
 
 
 def p_elif_list(p):
-    '''elseif_list : empty
+    '''elseif_list : empty     %prec LOWER_THAN_ELSEIF
                    | elseif_list ELSEIF LPAREN expr RPAREN statement'''
     pass
 
 
-def p_else_single(p):
-    '''else_single : empty
-                   | ELSE statement '''
-    pass
+# def p_else_single(p):
+#     '''else_single : 
+#                    | ELSE statement '''
+#     pass
 
 
 def p_new_elseif_list(p):
@@ -392,12 +395,12 @@ def p_function_call(p):
 
 def p_function_call_body(p):
     ''' fucntion_call_body : LPAREN function_call_parameter_list RPAREN
-                            | LPAREN empty RPAREN '''
+                             '''
 
 
 def p_function_call_variable(p):
     '''function_call : variable_without_objects LPAREN function_call_parameter_list RPAREN
-                    | variable_without_objects LPAREN empty RPAREN '''
+                    '''
     pass
 
 
@@ -580,6 +583,7 @@ def p_expr_binary_op(p):
             | expr GREATER_THAN expr
             | expr GRATER_THAN_OR_EQUAL expr
             | expr INSTANCEOF expr
+            | expr SPACESHIP expr
             | expr INSTANCEOF STATIC'''
     print("reached")
     pass
@@ -723,6 +727,7 @@ def p_expr_group(p):
 
 def p_nowdoc(p):
     'nowdoc : START_NOWDOC nowdoc_text_content END_NOWDOC'
+    # print("reached nowdoc")
     pass
 
 
@@ -743,6 +748,7 @@ def p_scalar_heredoc(p):
 def p_nowdoc_text_content(p):
     '''nowdoc_text_content : nowdoc_text_content ENCAPSED_AND_WHITESPACE
                            | empty'''
+    
     pass
 
 
