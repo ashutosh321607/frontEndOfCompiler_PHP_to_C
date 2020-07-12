@@ -22,7 +22,7 @@
 
 
 ### To execute the parser run the following command:
-    ```sh 
+    ```
     python3 php_parser.py ./test_files/filename.php
     ```
  - **Note: The filename.php file contains the php code which you want to check. This file lies in the ./test_files folder**<br>
