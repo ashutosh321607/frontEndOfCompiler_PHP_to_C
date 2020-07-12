@@ -28,6 +28,9 @@
 
 
 ### To execute the parser run the following command:
- - python3 php_parser.py filename.php
- **Note: The filename.php file contains the php code which you want to check**
- **There are several test php files in the directory containing php_parser.py which you can use inplace of filename.php (eg.: do-whle.php, for.php, etc.)**
+ ```sh
+ python3 php_parser.py $filename.php
+ python3 php_parser.py $Folder_name
+ ```
+ - **Note**: The filename.php file contains the php code which you want to check and if you want to excute more then one file which inside a Folder then give the folder name and it will pickup all the file inside it. or you can give input from stdin too.
+ - There are several test php files in the directory containing php_parser.py which you can use inplace of filename.php (eg.: do-whle.php, for.php, etc.)
