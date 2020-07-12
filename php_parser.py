@@ -391,8 +391,7 @@ def p_function_call(p):
 
 
 def p_function_call_body(p):
-    ''' fucntion_call_body : LPAREN function_call_parameter_list RPAREN
-                            | LPAREN empty RPAREN '''
+    ''' fucntion_call_body : LPAREN function_call_parameter_list RPAREN'''
 
 
 def p_function_call_variable(p):
@@ -1006,13 +1005,14 @@ def run_parser(parser, source, quiet, debug):
     except:
         print("Critical error in:", source.name)
         raise
-
-    # if not quiet:
-    #     from pprint import pprint
-    #     for item in result:
-    #         if hasattr(item, 'generic'):
-    #             item = item.generic()
-    #         pprint(item)
+    print(quiet)
+    if not quiet:
+        from pprint import pprint
+        print(result)
+        for item in result:
+            if hasattr(item, 'generic'):
+                item = item.generic()
+            pprint(item)
 
     parser.restart()
 
