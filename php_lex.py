@@ -29,7 +29,7 @@ reserved = (
     'ENDFOR',  'ENDIF', 'ENDSWITCH', 'ENDWHILE', 'EVAL', 'EXIT',
     'FOR',  'FUNCTION', 'GLOBAL', 'IF', 'INCLUDE',
     'INCLUDE_ONCE', 'INSTANCEOF', 'ISSET', 'LIST',  'PRINT', 'REQUIRE',
-    'REQUIRE_ONCE', 'RETURN', 'STATIC', 'SWITCH', 'UNSET', 'USE',
+    'REQUIRE_ONCE', 'RETURN', 'STATIC', 'SWITCH', 'UNSET',
     'WHILE',  'CLONE',  'YIELD'
 )
 unparsed = (

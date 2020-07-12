@@ -3,7 +3,7 @@ import sys
 import php_lex
 import ply.yacc as yacc
 
-# Get the token map
+
 tokens = php_lex.tokens
 
 precedence = (
@@ -33,8 +33,6 @@ precedence = (
      'ARRAY_CAST', 'BOOL_CAST', 'UNSET_CAST', 'BINARY_CAST', 'AT'),
     ('right', 'LBRACKET'),
     ('nonassoc',  'CLONE'),
-    # ('left', 'ELSEIF'),
-    # ('left', 'ELSE'),
     ('nonassoc', 'LOWER_THAN_ELSE', 'LOWER_THAN_ELSEIF'),
     ('nonassoc', 'ELSE', 'ELSEIF'),
     ('left', 'ENDIF'),
@@ -257,7 +255,6 @@ def p_case_separator(p):
 def p_global_var_list(p):
     '''global_var_list : global_var_list COMMA global_var
                        | global_var '''
-# here
     pass
 
 
@@ -338,8 +335,6 @@ def p_expr_assign(p):
             | variable EQUALS AND expr '''
     pass
 
-
-# *************
 
 def p_expr_clone(p):
     'expr : CLONE expr'
@@ -474,22 +469,7 @@ def p_function_call_parameter(p):
 
 
 def p_expr_function(p):
-    'expr : FUNCTION is_reference LPAREN parameter_list RPAREN lexical_vars LBRACE inner_statement_list RBRACE'
-    pass
-
-
-def p_lexical_vars(p):
-    '''lexical_vars : USE LPAREN lexical_var_list RPAREN
-                    | empty'''
-    pass
-# doubt is the above rule required
-
-
-def p_lexical_var_list(p):
-    '''lexical_var_list : lexical_var_list COMMA AND VARIABLE
-                        | lexical_var_list COMMA VARIABLE
-                        | AND VARIABLE
-                        | VARIABLE'''
+    'expr : FUNCTION is_reference LPAREN parameter_list RPAREN LBRACE inner_statement_list RBRACE'
     pass
 
 
@@ -540,8 +520,6 @@ def p_expr_binary_op(p):
     pass
 
 
-############
-
 def p_expr_unary_op(p):
     '''expr : PLUS expr
             | MINUS expr
@@ -571,13 +549,9 @@ def p_expr_post_incdec(p):
             | variable DEC'''
     pass
 
-
 def p_expr_cast_int(p):
     'expr : INT_CAST expr'
     pass
-
-# add here
-
 
 def p_expr_cast_array(p):
     'expr : ARRAY_CAST expr'
@@ -704,7 +678,7 @@ def p_nowdoc_text_content(p):
 
 
 def p_scalar_namespace_name(p):
-    '''scalar : IDENTIFIER'''   # modified from namespace to identifier
+    '''scalar : IDENTIFIER'''   
     pass
 
 
@@ -719,8 +693,6 @@ def p_common_scalar_string(p):
                      | IDENTIFIER CONSTANT_ENCAPSED_STRING'''
     pass
 
-
-# add here
 def p_common_scalar_magic_func(p):
     'common_scalar : FUNC_C'
     pass
